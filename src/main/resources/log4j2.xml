@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+ 
+<!-- Appender, Layout 설정 -->
+<Appenders>
+ <Console name="console" target="SYSTEM_OUT">
+ <PatternLayout pattern=" %-5level %c(%M:%L) - %m%n"/>
+ </Console>
+</Appenders>
+ 
+<!-- Logger 설정 -->
+<Loggers>
+ <Root level="INFO">
+ <AppenderRef ref="console"/>
+ </Root>
+ <Logger name="com.todolist.controller" level="INFO" additivity="false" >
+ <AppenderRef ref="console"/>
+ </Logger>
+ 
+ <!--  너무 많이 찍히니깐 DEBUG를 INFO로... -->
+ <Logger name="org.springframework" level="INFO" additivity="false"> 
+ <AppenderRef ref="console"/>
+ </Logger>
+</Loggers>
+</Configuration>

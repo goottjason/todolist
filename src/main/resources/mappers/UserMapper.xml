@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 쿼리문 모아놓는 곳 -->
+<mapper namespace="com.todolist.mapper.UserMapper">
+
+  <!-- userid와 userpwd가 일치하는지 확인 후 UserDTO 반환 -->
+  <select id="selectAuthUser" resultType="com.todolist.domain.UserDTO">
+    select * from kjw_user where userid = #{userid} and userpwd = sha1(md5(#{userpwd}))
+  </select>
+
+
+  <insert id="insertUser">
+    insert into kjw_user (userid, userpwd, useremail, username, useraddr) values(#{userid}, sha1(md5(#{userpwd})), #{useremail}, #{username}, #{useraddr})
+  </insert>  
+  <select id="selectIdIsDuplicate" resultType="int">
+    select count(*) from kjw_user where userid = #{userid}
+  </select>
+  <select id="selectEmail" resultType="string">
+    select useremail from kjw_user where userid = #{userid}
+  </select>
+  
+  <select id="selectExistingPwdCheck" resultType="int">
+    select count(*) from kjw_user where userid = #{userid} and userpwd = sha1(md5(#{userpwd}))
+  </select>
+  
+  <update id="updateInfo">
+    update kjw_user set userpwd = sha1(md5(#{userpwd})), username = #{username}, useraddr = #{useraddr} where userid = #{userid}
+  </update>
+</mapper> 

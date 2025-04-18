@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 쿼리문 모아놓는 곳 -->
+<mapper namespace="com.todolist.mapper.TodolistMapper">
+  <insert id="insertTodo">
+    insert into kjw_todolist (title, duedate, writer) values(#{title}, #{duedate}, #{writer})
+  </insert>
+  <select id="selectAllTodo" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist where writer = #{userid} order by duedate
+  </select>
+  <update id="updateFinished">
+    update kjw_todolist set finished = #{finished} where dno = #{dno}
+  </update>
+  <delete id="deleteTodo">
+    delete from kjw_todolist where dno = #{dno}
+  </delete>
+  <update id="updateTodo">
+    update kjw_todolist set title = #{title}, duedate = #{duedate}, memo=#{memo}, location=#{location} where dno = #{dno}
+  </update>
+  
+  <!-- 검색 -->
+  <sql id="search">
+    <where>
+      <if test="writer != null and writer != ''">
+        writer = #{writer}
+      </if>
+      <if test="searchTypes != null and searchTypes == 'title' and searchWord != null and searchWord != ''">
+        <trim prefix="AND">
+          title like concat('%', #{searchWord},'%')        
+        </trim>
+      </if>
+      <if test="finished != null and finished != ''">
+        <trim prefix="AND">
+          finished = #{finished}
+        </trim>
+      </if>
+      <if test="from != null and from != '' and to != null and to != ''">
+        <trim prefix="AND">
+          dueDate between #{from} and #{to}
+        </trim>
+      </if>
+    </where>
+  </sql>
+  
+  <select id="selectSearchTodo" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist
+    <include refid="search"></include>
+    order by duedate
+  </select>
+  
+  <select id="selectTodoDueTommorrow" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist where duedate = date_add(curdate(), interval 1 day)
+  </select>
+  <select id="selectOne" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist where dno = #{dno}
+  </select>
+  
+  
+  
+  
+  <sql id="leftSidebarSelect">
+    <where>
+      <if test="writer != null and writer != ''">
+        writer = #{writer}
+      </if>
+      <if test="star == 1">
+        <trim prefix="AND">
+          star = '1'      
+        </trim>
+      </if>
+	    <choose>
+	      <when test="duedate == 'null!!'">
+	        <trim prefix="AND">
+	          duedate = ''      
+	        </trim>
+	      </when>
+	      <when test="duedate == 'notnull!!'">
+	        <trim prefix="AND">
+	          duedate != ''      
+	        </trim>
+	      </when>
+	      <when test="duedate != null and duedate != ''">
+	        <trim prefix="AND">
+	          duedate = #{duedate}   
+	        </trim>
+	      </when>
+	    </choose>
+    </where>
+  </sql>
+  
+  <select id="selectwhere" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist
+    <include refid="leftSidebarSelect"></include>
+    order by duedate
+  </select>
+</mapper>
