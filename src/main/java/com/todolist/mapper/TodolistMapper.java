@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
 public interface TodolistMapper {
@@ -26,5 +27,5 @@ public interface TodolistMapper {
   
   List<TodoDTO> selectOne(@Param("dno") int dno);
 
-  List<TodoDTO> selectwhere(TodoDTO todoDTO);
+  List<TodoDTO> selectwhere(SortDTO sortDTO);
 }

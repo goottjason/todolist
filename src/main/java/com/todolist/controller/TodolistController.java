@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.domain.UserDTO;
 import com.todolist.service.TodolistService;
@@ -49,6 +50,9 @@ public class TodolistController {
   public String register(TodoDTO todoDTO, RedirectAttributes rttr, HttpSession session) {
     UserDTO authUser = (UserDTO) session.getAttribute("authUser");
     log.info("◆◆◆◆◆authUser{}", authUser);
+    if(todoDTO.getDuedate().equals("")) {    	
+    	todoDTO.setDuedate(null);
+    }
     log.info("◆◆◆◆◆todoDTO{}", todoDTO);
     if(authUser == null) {
       return "fail";
@@ -122,14 +126,14 @@ public class TodolistController {
   }
   
   @PostMapping("/selectwhere")
-  public String selectwhere(TodoDTO todoDTO, HttpSession session, Model model) {
+  public String selectwhere(SortDTO sortDTO, HttpSession session, Model model) {
     UserDTO authUser = (UserDTO) session.getAttribute("authUser");
     if (authUser == null) {
       return "/user/login";
     }
-    todoDTO.setWriter(authUser.getUserid());
-    log.info("★★★★★★★{}", todoDTO);
-    List<TodoDTO> list = todolistService.selectwhere(todoDTO);
+    sortDTO.setWriter(authUser.getUserid());
+    log.info("★★★★★★★{}", sortDTO);
+    List<TodoDTO> list = todolistService.selectwhere(sortDTO);
     model.addAttribute("todoAllList", list);
     log.info("■■■■■■■■{}", list);
 

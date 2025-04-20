@@ -254,3 +254,41 @@ li.completed .titleDiv, li.completed .duedateDiv {
   color: #888;
   cursor: pointer;
 }
+
+
+/* 모달 및 인라인 수정 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px 24px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+      min-width: 180px;
+      max-width: 30vw;
+      position: absolute;
+    }
+    .close {
+      position: absolute;
+      right: 12px; top: 8px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .edit-input {
+      border: none;
+      background: transparent;
+      font-size: inherit;
+      width: 80px;
+      outline: none;
+      padding: 0;
+    }
+    .editable-title {
+      cursor: pointer;
+    }

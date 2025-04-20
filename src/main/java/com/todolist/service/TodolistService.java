@@ -3,6 +3,7 @@ package com.todolist.service;
 import java.util.List;
 
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
 public interface TodolistService {
@@ -21,6 +22,6 @@ public interface TodolistService {
 
   List<TodoDTO> selectOne(int dno);
 
-  List<TodoDTO> selectwhere(TodoDTO todoDTO);
+  List<TodoDTO> selectwhere(SortDTO sortDTO);
 
 }

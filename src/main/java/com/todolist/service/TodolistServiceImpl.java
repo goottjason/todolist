@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.mapper.TodolistMapper;
 
@@ -56,10 +57,10 @@ public class TodolistServiceImpl implements TodolistService {
   }
 
   @Override
-  public List<TodoDTO> selectwhere(TodoDTO todoDTO) {
+  public List<TodoDTO> selectwhere(SortDTO sortDTO) {
     // TODO Auto-generated method stub
-    log.info("$$$$$$$$$$$$$$$$$$$$${}", todoDTO);
-    return todolistMapper.selectwhere(todoDTO);
+    log.info("$$$$$$$$$$$$$$$$$$$$${}", sortDTO);
+    return todolistMapper.selectwhere(sortDTO);
   }
 
 }
