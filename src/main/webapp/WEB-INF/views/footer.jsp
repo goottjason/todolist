@@ -11,7 +11,6 @@
 </head>
 <body>
 	<div class="mt-5 p-4 bg-secondary text-white text-center">
-	  <p>Footer</p>
 	</div>
 </body>
 </html>

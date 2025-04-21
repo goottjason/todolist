@@ -25,21 +25,21 @@
 		          <span style="color:#4b87c6;">
                 <i id="detailfinishedIcon-${todo[0].dno}"
                    class="finishedIcon fa-regular ${todo[0].finished == 1 ? 'fa-circle-check' : 'fa-circle'}" 
-                   data-dno="${todo[0].dno}" style="color:#1e3050"></i>
+                   data-dno="${todo[0].dno}" style="color:#1e3050; font-size:24px;"></i>
               </span>
             </td>
             
             <!-- title -->
-		        <td style="width:60%">
+		        <td style="width:60%;background: #faf9f8;">
 		          <input type="text" id="detailtitle-${todo[0].dno}" class="form-control"
 		                 name="detailtitle" value="${todo[0].title}">
 		        </td>
 		        
 		        <!-- star -->
-		        <td style="width:20%">
+		        <td class ="detailStarDiv"style="width:20%; text-align:right; vertical-align:center;background: #faf9f8;">
 		          <span style="color:#4b87c6;">
                 <i id="detailstar-${todo[0].dno}" class="starIcon fa-regular fa-star ${todo[0].star == 1 ? 'fa-solid' : ''}" 
-                   data-dno="${todo[0].dno}" style="color:#1e3050"></i>
+                   data-dno="${todo[0].dno}" style="color:#1e3050; font-size:24px;"></i>
               </span>
 		        </td>		        
 		      </tr>
@@ -92,44 +92,7 @@
 		  </table>
 		
 		
-		
-		
-<!-- 			<div> -->
-<!-- 			  <div>제목</div> -->
-<%-- 				<input type="checkbox" id="detailcheck-${todo[0].dno}" class="finishedCheckbox" data-dno="${todo[0].dno}" --%>
-<%-- 				       ${todo[0].finished == 1 ? 'checked' : ''} > --%>
-<%-- 				<input type="text" class="form-control" id="detailtitle-${todo[0].dno}" name="detailtitle" value="${todo[0].title}"> --%>
-<!-- 			</div> -->
-<!-- 			<div>중요도</div> -->
-<!-- 			<div> -->
-<!-- 			  <div>기한</div> -->
-<%-- 				<input type="date" class="form-control" id="detailduedate-${todo[0].dno}" name="detailduedate" value="${todo[0].duedate}"> --%>
-<!-- 			</div> -->
-<!-- 			<div> -->
-<!-- 			   <div>노트</div> -->
-<%-- 				<input type="text" class="form-control" id="detailmemo-${todo[0].dno}" name="detailmemo" value="${todo[0].memo}"> --%>
-<!-- 			</div> -->
-<!-- 			<div> -->
-<!-- 			  <div>위치</div> -->
-<%-- 				<input type="text" class="form-control" id="detaillocation-${todo[0].dno}" name="detaillocation" value="${todo[0].location}"> --%>
-<!-- 			</div> -->
-<!-- 			<div> -->
-<%-- 			<input id="detailconbtn-${todo[0].dno}" 
-type="button" 
-class="btn btn-outline-info btn-sm detailConBtn" 
-data-dno="${todo[0].dno}" 
-data-writer="${todo[0].writer}" value="수정하기"> --%>
-<!-- 			</div> -->
-<!-- 			<div id="updateTimeView"> -->
-<!-- 			업데이트 됨 : <span id="nowUpdateTime"></span> -->
-<!-- 			</div> -->
 
-			<!--     <ul class="list-group"> -->
-			<!--        리스트 태그요소 id : dlist-1, dlist-2 ... -->
-			<%--        <li id ="dlist-${todo[0].dno}" class="list-group-item d-flex align-items-center ${todo[0].finished ? 'completed' : '' }" > --%>
-
-			<!--        </li> -->
-			<!--       </ul> -->
 		</div>
 	</div>
 </body>

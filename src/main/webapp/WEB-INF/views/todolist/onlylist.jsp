@@ -73,7 +73,7 @@
             <td style="padding:8px 12px;">
               <button class="moreBtn" 
                       data-dno="${todo.dno}"
-                      style="border:1px solid #b1b1a8; border-radius:4px; padding:1px 6px; background:#fff; color:#4b87c6; margin-right:2px; cursor:pointer; font-size:12px;">더보기</button>
+                      style="border:1px solid #b1b1a8; border-radius:4px; padding:1px 6px; background:#fff; color:#777b7c; margin-right:2px; cursor:pointer; font-size:12px;">더보기</button>
               <button class="delBtn" 
                       data-dno="${todo.dno}"
                       style="border:1px solid #e57373; border-radius:4px; padding:1px 6px; background:#fff; color:#e57373; cursor:pointer; font-size:12px;">삭제</button>

@@ -15,7 +15,6 @@
 <script
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script type="text/javascript"><%@ include file="script.js" %></script>
-<style><%@include file="style.css"%></style>
 <title>To Do</title>
 <style>
 
@@ -31,12 +30,38 @@
     <div class="headerLeft">
     <a class="navbar-brand" href="/">To do</a>
     </div>
-    <div class="headerCenter">
-      <div id="searchBar">
-        <div id="firstLine" class="search-bar">
-          <input type="text" class="form-control search-bar__input" id="searchWord"
-            placeholder="" name="searchWord" /> <input type="hidden"
-            name="searchTypes" value="title" />
+    <div class="headerCenter" style="width:800px;outline:none;">
+      <div id="searchBar" style="width:800px;">
+        <div id="firstLine" class="search-bar" style="position:relative; width:100%; max-width:800px;">
+          <input
+            type="text"
+            id="searchWord"
+            class="form-control search-bar__input"
+            name="searchWord"
+            placeholder="검색어를 입력하세요."
+            style="
+                width:100%;
+                padding:8px 12px 8px 38px;
+                border:none;
+                border-radius:20px;
+/*                 background:#26323a; */
+                color:gray;
+                font-size:17px;
+                box-sizing:border-box;
+                outline:none;
+              "
+            >
+          <span style="
+            position:absolute;
+            left:12px;
+            top:50%;
+            transform:translateY(-50%);
+            color:#bfc6cc;
+            font-size:20px;
+            cursor:pointer;
+          ">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </span>
         </div>
       </div>
     </div>

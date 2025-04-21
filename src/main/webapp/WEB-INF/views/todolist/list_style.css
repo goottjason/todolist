@@ -1,39 +1,63 @@
+* {
+  font-family:'Pretendard','Inter',sans-serif;
+}
+
+
+
+
 /* header */
 .headerItembox {
   background-color: #2564cf;
   color: white;
   margin: 0;
-  padding: 20px 20px;
+  padding: 100 0 0 0;
   display: flex;
   justify-content: space-between;
 }
-.search-bar {
-  margin: 0 auto;
-  width: 500px;
-  height: 27px;
-  border-radius: 5px;
-  border: solid 1px rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-  opacity: 1;
-}
+
+/* .search-bar { */
+/*   margin: 0 auto; */
+/*   width: 500px; */
+/*   height: 27px; */
+/*   border-radius: 5px; */
+/*   border: solid 1px rgba(0, 0, 0, 0.3); */
+/*   display: flex; */
+/*   justify-content: center; */
+/*   align-items: center; */
+/*   z-index: 1; */
+/*   opacity: 1; */
+/* } */
 
 /* list.jsp */
 .itembox {
   display: flex;
-  height: 100vh; /* 전체 높이 맞추기 */
-  background: #f9f9f9; /* 전체 배경색 */
+  min-height: 100vh; /* 전체 높이 맞추기 */
 }
 
+/* left menu */
 .left {
   width: 350px; /* 사이드바 고정 너비 */
-  background-color: #F0F8FF;
-  min-height: 100vh; /* 전체 높이 */
-  border-right: 1px solid #e0e0e0; /* 경계선 */
-  box-sizing: border-box;
+/*   min-height: 100vh; 전체 높이 */
+/*   border-right: 1px solid #e0e0e0; 경계선 */
+/*   box-sizing: border-box; */
 }
+
+#my-calendar {
+  width: 300px;
+  margin: 30px auto;
+}
+
+.jsCalendar {
+  font-family: 'Inter', 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+  margin: 50px auto;
+}
+
+.jsCalendar-title {
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+
 
 .center {
   flex: 1;
@@ -45,14 +69,268 @@
 }
 
 .right {
-  width: 350px; /* 오른쪽 패널 고정 너비 */
-  background-color: #F0F8FF;
+  width: 450px; /* 오른쪽 패널 고정 너비 */
   min-height: 100vh;
   border-left: 1px solid #e0e0e0; /* 경계선 */
   box-sizing: border-box;
   padding: 24px 16px;
   overflow-y: auto;
 }
+
+#secondLine {
+  display: flex;
+}
+
+#finishCheck {
+  display: flex;
+  width: 300px;
+}
+
+#duedateCheck {
+  display: flex;
+}
+
+.headerLeft {
+  width: 200px;
+  height: 100%;
+}
+
+.headerRight {
+  width: 300px;
+  height: 100%;
+}
+
+.headerCenter {
+/*   width: 100%; */
+/*   height: 100%; */
+}
+
+.headerLi {
+  display: inline-block;
+}
+
+.checkon {
+  color: red;
+}
+
+li.completed .titleDiv, li.completed .duedateDiv {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.testDiv {
+  display: flex;
+  flex-direction: column;
+}
+
+#updateTimeView {
+  display: None;
+}
+
+#pwdmod {
+  display: None;
+}
+
+#newUserpwdArea {
+  display: None;
+}
+
+/* 인포메이션 바 */
+.header-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /*   background: #fbfcf7; */
+  padding: 16px 24px 0 24px;
+  border-bottom: 1px solid #f4f4ec;
+  font-family: 'Pretendard', Arial, sans-serif;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.menu {
+  font-size: 20px;
+  color: #b1b1a8;
+  margin: 0 8px;
+  cursor: pointer;
+}
+
+.view-type, .tab {
+  font-size: 15px;
+  color: #888;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.tab.active {
+  color: #222;
+  border-bottom: 2px solid #222;
+  font-weight: bold;
+  padding-bottom: 2px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.option {
+  color: #888;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.header-sub {
+  /*   background: #fbfcf7; */
+  padding: 0 24px 8px 56px;
+  font-size: 13px;
+  color: #b1b1a8;
+  border-bottom: 1px solid #f4f4ec;
+}
+
+/* 할일 추가 바 */
+.todo-box {
+  /*   background: #fcfcf7; */
+  border: 1px solid #f4f4ec;
+  border-radius: 6px;
+  width: 100%;
+  /*   max-width: 700px; */
+  margin: 12px auto;
+  box-sizing: border-box;
+  padding: 8px 0 0 0;
+}
+
+.todo-input-row {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 16px;
+  border-bottom: 1px solid #f4f4ec;
+  height: 48px;
+}
+
+.circle {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #4b87c6;
+  border-radius: 50%;
+  margin-right: 10px;
+  background: #fff;
+}
+
+.regTitleInput {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  color: #4b87c6;
+  outline: none;
+  width: 100%;
+}
+
+.todo-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  /*   background: #fafaf6; */
+  border-radius: 0 0 6px 6px;
+}
+
+.todo-icons {
+  display: flex;
+  gap: 12px;
+}
+
+.icon {
+  font-size: 18px;
+  cursor: pointer;
+  color: #b1b1a8;
+}
+
+.add-btn {
+  background: #fff;
+  border: 1px solid #e0e0d8;
+  border-radius: 4px;
+  padding: 4px 16px;
+  font-size: 15px;
+  color: #888;
+  cursor: pointer;
+}
+
+/* 모달 및 인라인 수정 스타일 */
+.modal {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px 24px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
+  max-width: 30vw;
+  position: absolute;
+}
+
+.close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.edit-input {
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  width: 80px;
+  outline: none;
+  padding: 0;
+}
+
+.titleSpan {
+  /* 손가락 모양으로 포인터 */
+  cursor: pointer;
+}
+
+
+
+
+
+/* header */
+.headerItembox {
+  background-color: #2564cf;
+  color: white;
+  margin: 0;
+  padding: 20px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+
 
 
 #secondLine {
@@ -216,7 +494,7 @@ li.completed .titleDiv, li.completed .duedateDiv {
   background: #fff;
 }
 
-.regTitleInput {
+.todo-input {
   border: none;
   background: transparent;
   font-size: 18px;
@@ -256,40 +534,33 @@ li.completed .titleDiv, li.completed .duedateDiv {
 }
 
 
-/* 모달 및 인라인 수정 스타일 */
-    .modal {
-      display: none;
-      position: fixed;
-      left: 0; top: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0,0,0,0.1);
-      z-index: 1000;
-    }
-    .modal-content {
-      background: #fff;
-      border-radius: 8px;
-      padding: 16px 24px;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
-      min-width: 180px;
-      max-width: 30vw;
-      position: absolute;
-    }
-    .close {
-      position: absolute;
-      right: 12px; top: 8px;
-      font-size: 20px;
-      cursor: pointer;
-    }
-    .edit-input {
-      border: none;
-      background: transparent;
-      font-size: inherit;
-      width: 80px;
-      outline: none;
-      padding: 0;
-    }
-    .titleSpan {
-      /* 손가락 모양으로 포인터 */
-      cursor: pointer;
-    }
+
+
+
+
+.detailDiv table {
+  border-collapse: separate !important;
+  border-spacing: 0 26px !important;  /* 행 간격 조정 */
+}
+.detailDiv td {
+  padding: 4px 3px;
+  vertical-align: middle;
+}
+.detailDiv input,
+.detailDiv textarea,
+.ditailDiv {
+  border: none;
+  outline: none;
+  background: #faf9f8;
+  border-radius: 6px;
+/*   padding: 8px 12px; */
+  font-size: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+
+
+
