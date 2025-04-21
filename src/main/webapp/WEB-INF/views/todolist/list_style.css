@@ -216,7 +216,7 @@ li.completed .titleDiv, li.completed .duedateDiv {
   background: #fff;
 }
 
-.todo-input {
+.regTitleInput {
   border: none;
   background: transparent;
   font-size: 18px;
@@ -289,6 +289,7 @@ li.completed .titleDiv, li.completed .duedateDiv {
       outline: none;
       padding: 0;
     }
-    .editable-title {
+    .titleSpan {
+      /* 손가락 모양으로 포인터 */
       cursor: pointer;
     }

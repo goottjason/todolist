@@ -31,7 +31,7 @@ public class EmailReminderScheduler {
   
 //  @Scheduled(cron = "0 0/1 * * * * ")
   public void reminderSchedule() throws AddressException, FileNotFoundException, IOException, MessagingException {
-    // 내일이 마감인 글 주회
+    // 내일이 마감인 글 조회
     List<TodoDTO> list = todolistMapper.selectTodoDueTommorrow();
     log.info("★★★★{}", list);
     

@@ -49,46 +49,127 @@ public class TodolistController {
   @ResponseBody
   public String register(TodoDTO todoDTO, RedirectAttributes rttr, HttpSession session) {
     UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    log.info("◆◆◆◆◆authUser{}", authUser);
-    if(todoDTO.getDuedate().equals("")) {    	
-    	todoDTO.setDuedate(null);
-    }
-    log.info("◆◆◆◆◆todoDTO{}", todoDTO);
     if(authUser == null) {
-      return "fail";
+      return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
     } else {
-      try {
-        if(todolistService.register(todoDTO) == 1) {
-          rttr.addFlashAttribute("status", "success");
-        } else {
-          log.info("등록 실패");
-        }
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      if(todoDTO.getDuedate().equals("")) {     
+        todoDTO.setDuedate(null);
+      }
+      todoDTO.setWriter(authUser.getUserid());
+      log.info("◆◆◆◆◆register Todo{}", todoDTO);
+      
+      if(todolistService.register(todoDTO) == 1) {
+        rttr.addFlashAttribute("status", "success");   
+      } else {
+        return "fail";
       }
     }
     return "success";
   }
   
+  
+  
+  
+  
+  // 체크박스 클릭시 업데이트
   @PostMapping("/updateFinished")
   @ResponseBody
-  public String updateFinished(@RequestParam("dno") int dno, @RequestParam("finished") boolean finished) {
+  public String updateFinished(@RequestParam("dno") int dno, @RequestParam("finished") int finished, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+
     log.info("◆◆◆◆◆ dno: {}", dno);
     log.info("◆◆◆◆◆ finished: {}", finished);
-    todolistService.updateFinished(dno, finished);
-    
+
+    try {
+      todolistService.updateFinished(dno, finished);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
     return "success";
   }
   
-  @PostMapping("/updateTodo")
+  // 중요도 클릭시 업데이트
+  @PostMapping("/updateStar")
+  @ResponseBody
+  public String updateStar(@RequestParam("dno") int dno, @RequestParam("star") int star, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+
+    log.info("◆◆◆◆◆ dno: {}", dno);
+    log.info("◆◆◆◆◆ star: {}", star);
+    try {
+      todolistService.updateStar(dno, star);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
+    return "success";
+  }
+  
+  // 타이틀 클릭시 업데이트
+  @PostMapping("/updateTitle")
+  @ResponseBody
+  public String updateTitle(@RequestParam("dno") int dno, @RequestParam("title") String title, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+
+    log.info("◆◆◆◆◆ dno: {}", dno);
+    log.info("◆◆◆◆◆ title: {}", title);
+    try {
+      todolistService.updateTitle(dno, title);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
+    return "success";
+  }
+  
+  // 디테일 사이드바에서 업데이트
+  @PostMapping("/updateDetail")
   @ResponseBody // success는 뷰 이름이 아니다. 값 자체를 응답해야하므로 어노테이션 붙여준다!
-  public String updateTodo(TodoDTO todoDTO, RedirectAttributes rttr, HttpSession session) {
+  public String updateDetail(TodoDTO todoDTO, RedirectAttributes rttr, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+    if(todoDTO.getDuedate().equals("")) {     
+      todoDTO.setDuedate(null);
+    }
     log.info("{◆◆◆◆◆ todoDTO : {}", todoDTO);
     todolistService.updateTodo(todoDTO);
     
     return "success";
   }
+  
+  // 디테일 사이드바에서 삭제
+  @PostMapping("/deleteDetail")
+  @ResponseBody
+  public String deleteDetail(@RequestParam("dno") int dno, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+    log.info("◆◆◆◆◆ dno: {}", dno);
+    try {
+      todolistService.deleteDetail(dno);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
+    return "success";
+  }
+  
+  
+  
+  
   
   @PostMapping("/deleteTodo")
   @ResponseBody
@@ -118,12 +199,28 @@ public class TodolistController {
     UserDTO authUser = (UserDTO) session.getAttribute("authUser");
     if (authUser == null) {
       return "/user/login";
-    }
-    todoDTO.setWriter(authUser.getUserid());
+    }    
+    log.info("■■■■ {}", todoDTO);
     List<TodoDTO> list = todolistService.viewAll(authUser.getUserid());
+    log.info("■■■■ {}", list);
+
     model.addAttribute("todoAllList", list);
     return "/todolist/onlylist";
   }
+  
+  @PostMapping("/selectSortBy")
+  public String selectSortBy(@RequestParam("sortBy") String sortBy, HttpSession session, Model model) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+    List<TodoDTO> list = todolistService.selectSortBy(authUser.getUserid(), sortBy);
+    log.info("■■■■ {}", list);
+
+    model.addAttribute("todoAllList", list);
+    return "/todolist/onlylist";
+  }
+  
   
   @PostMapping("/selectwhere")
   public String selectwhere(SortDTO sortDTO, HttpSession session, Model model) {
@@ -132,7 +229,9 @@ public class TodolistController {
       return "/user/login";
     }
     sortDTO.setWriter(authUser.getUserid());
+    
     log.info("★★★★★★★{}", sortDTO);
+    
     List<TodoDTO> list = todolistService.selectwhere(sortDTO);
     model.addAttribute("todoAllList", list);
     log.info("■■■■■■■■{}", list);

@@ -28,11 +28,29 @@ public class TodolistServiceImpl implements TodolistService {
     return todolistMapper.selectAllTodo(userid);
   }
 
+  // 체크박스 클릭시 업데이트
   @Override
-  public void updateFinished(int dno, boolean finished) {
+  public void updateFinished(int dno, int finished) {
     todolistMapper.updateFinished(dno, finished);
   }
+  
+  // 체크박스 클릭시 업데이트
+  @Override
+  public void updateStar(int dno, int star) {
+    todolistMapper.updateStar(dno, star);
+  }
 
+  // 타이틀 클릭시 업데이트
+  @Override
+  public void updateTitle(int dno, String title) {
+    todolistMapper.updateTitle(dno, title);
+  }
+  
+  // 디테일 사이드바에서 삭제
+  @Override
+  public void deleteDetail(int dno) {
+    todolistMapper.deleteDetail(dno);
+  }
   @Override
   public void deleteTodo(int dno) {
     todolistMapper.deleteTodo(dno);
@@ -59,8 +77,16 @@ public class TodolistServiceImpl implements TodolistService {
   @Override
   public List<TodoDTO> selectwhere(SortDTO sortDTO) {
     // TODO Auto-generated method stub
-    log.info("$$$$$$$$$$$$$$$$$$$$${}", sortDTO);
     return todolistMapper.selectwhere(sortDTO);
   }
+
+  @Override
+  public List<TodoDTO> selectSortBy(String writer, String sortBy) {
+    // TODO Auto-generated method stub
+    return todolistMapper.selectSortBy(writer, sortBy);
+  }
+
+
+
 
 }

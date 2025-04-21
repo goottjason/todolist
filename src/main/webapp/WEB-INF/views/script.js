@@ -1,5 +1,6 @@
 ﻿function ajaxFunc(url, data, dataType=null) {
   let result = "";
+  console.log(data, dataType);
   $.ajax({
     url : url, // 데이터가 송수신될 서버의 주소
     type : "POST", // 통신 방식 (GET, POST, PUT, DELETE)
@@ -7,6 +8,7 @@
     dataType : dataType,
     async : false,
     success : function(data) {
+      console.log(data);
       result = data;
     },
     error : function() {

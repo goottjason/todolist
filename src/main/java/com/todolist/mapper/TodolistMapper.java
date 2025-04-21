@@ -11,9 +11,19 @@ import com.todolist.domain.TodoDTO;
 public interface TodolistMapper {
   int insertTodo(TodoDTO todoDTO);
 
-  List<TodoDTO> selectAllTodo(String userid);
+  List<TodoDTO> selectAllTodo(@Param("userid") String userid);
+  
+  // 체크박스 클릭시 업데이트
+  void updateFinished(@Param("dno") int dno, @Param("finished") int finished);
 
-  void updateFinished(@Param("dno") int dno, @Param("finished") boolean finished);
+  // 중요도 클릭시 업데이트
+  void updateStar(@Param("dno") int dno, @Param("star") int star);
+
+  // 타이틀 클릭시 업데이트
+  void updateTitle(@Param("dno") int dno, @Param("title") String title);
+  
+  // 디테일 사이드바에서 삭제
+  void deleteDetail(int dno);
 
   void deleteTodo(@Param("dno") int dno);
 
@@ -28,4 +38,7 @@ public interface TodolistMapper {
   List<TodoDTO> selectOne(@Param("dno") int dno);
 
   List<TodoDTO> selectwhere(SortDTO sortDTO);
+
+  List<TodoDTO> selectSortBy(@Param("writer") String writer, @Param("sortBy") String sortBy);
+
 }

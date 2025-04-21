@@ -17,5 +17,5 @@ public class SortDTO {
 	private String writer;
 	private String duedate;
 	private String star;
-
+	private String finished;
 }

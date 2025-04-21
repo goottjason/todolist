@@ -9,46 +9,58 @@
   <script type="text/javascript"><%@ include file="../script.js" %></script>
   <script src="https://kit.fontawesome.com/9bef4b10f4.js" crossorigin="anonymous"></script>
   <style><%@include file="list_style.css"%></style>
-  
-  
-  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js"></script>	
+	
   <title>다이어리목록</title>
   
   
 
   <script type="text/javascript">
-  
+ 
   // ================================
   // jQuery 이벤트 및 동작 초기화
   // ================================
   $(function() {
+	  let picker = new easepick.create({
+          element: "#datepicker",
+          css: [
+             "https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css"
+          ],
+          zIndex: 10
+        });
 
-    // -------- 인라인 제목 수정 --------
-    $(document).on('click', '.editable-title', function() {
-      var $span  = $(this);
-      var $input = $span.siblings('.edit-input');
-      $input.val($span.text()).show().focus();
-      $span.hide();
+	  
+	  
+	  $(document).on('click', '#regDuedate', function() {
+		  $("#datepicker").click();
+	  });
+	  
+	  
+    // -------- 제목 수정 --------
+    $(document).on('click', '.titleSpan', function() {
+      let span  = $(this);
+      let input = span.siblings('.edit-input');
+      input.val(span.text()).show().focus();
+      span.hide();
     });
-
+    
     $(document).on('keydown', '.edit-input', function(e) {
       if (e.key === "Enter") {
-        var $input = $(this);
-        var value  = $input.val();
-        var $span  = $input.siblings('.editable-title');
-        $span.text(value).show();
-        $input.hide();
-        modify(value); // 엔터 시 수정 함수 호출
+    	  let dno = $(this).data("dno");
+        let value = $(this).val();
+        let span = $(this).siblings('.titleSpan');
+        span.text(value).show();
+        $(this).hide();
+        // 엔터 시 수정 함수 호출
+        titleModify(dno, value); 
       }
     });
-
-    $(document).on('blur', '.edit-input', function() {
-      var $input = $(this);
-      var $span  = $input.siblings('.editable-title');
-      $span.text($input.val()).show();
-      $input.hide();
+    $(document).on('keydown', '.regTitleInput', function(e) {
+    	  if (e.key == "Enter") {
+    		  register();
+    	  }
     });
-
     
     // -------- 정렬 모달 동작 --------
     $('#sortBtn').on('click', function(e) {
@@ -74,6 +86,30 @@
     $(document).on('click', function() {
       $('#sortModal').hide();
     });
+    
+    $('#reminderBtn').on('click', function(e) {
+        e.stopPropagation();
+        var btnOffset = $(this).offset();
+        var btnHeight = $(this).outerHeight();
+        $('#reminderModal').show();
+        $('#reminderModal .modal-content').css({
+          left: btnOffset.left + 'px',
+          top: (btnOffset.top + btnHeight) + 'px'
+        });
+      });
+
+      $('.close').on('click', function(e) {
+        e.stopPropagation();
+        $('#reminderModal').hide();
+      });
+
+      $('#reminderModal .modal-content').on('click', function(e) {
+        e.stopPropagation();
+      });
+
+      $(document).on('click', function() {
+        $('#reminderModal').hide();
+      });
 
     
     // -------- 페이지 초기화 --------
@@ -102,18 +138,59 @@
     });
 
     
-    // -------- 완료 체크박스 --------
-    $(".finishedCheckbox").change(function() {
+    // -------- 완료 체크박스가 눌렸을 때 --------
+    // $(".finishedCheckbox").change(function() {
+    $("body").on("click", ".finishedIcon", function() {
       let dno = $(this).data("dno");
-      let checked = $(this).is(":checked");
-      let data = { "dno": dno, "finished": checked };
+      let finished = null;
+      let solid = $(this).hasClass("fa-circle-check");
+      let checked = null;
+      // 채워져있으면 해제해야 함
+      if(solid) {
+    	  finished = 0;
+    	  checked = false;
+      } else {
+    	  finished = 1;
+    	  checked = true;
+      }
+      let data = { "dno": dno, "finished": finished };
       let result = ajaxFunc("/todolist/updateFinished", data, "text");
-      if (result == 'success') {
-        $("#dlist-" + dno).toggleClass("completed", checked);
-        self.location = '/todolist/list';
+      if (result == "success") {
+        $("#dfinishedIcon-" + dno).toggleClass("fa-circle");
+        $("#dfinishedIcon-" + dno).toggleClass("fa-circle-check");
+        $("#detailfinishedIcon-"+dno).toggleClass("fa-circle");
+        $("#detailfinishedIcon-"+dno).toggleClass("fa-circle-check");
+        $("#dtitleTd-" + dno).toggleClass("completed", checked);
       }
     });
-
+    
+    // -------- 중요도 아이콘이 눌렸을 때 --------
+    $("body").on("click", ".starIcon", function() {
+    	let dno = $(this).data("dno");
+    	let star = null;
+    	// 
+    	let solid = $(this).hasClass("fa-solid");
+    	console.log(solid);
+    	// 채워져있으면 해제해야 함
+    	if(solid) {
+    		star = 0;
+      } else {
+    	  star = 1;
+      }
+    	
+    	let data = { "dno": dno, "star": star };
+      let result = ajaxFunc("/todolist/updateStar", data, "text");
+      if (result == "success") {
+        // checked가 true이면, "completed" 추가하고, false면 삭제
+        $("#dstar-" + dno).toggleClass("fa-solid");
+        $("#detailstar-"+dno).toggleClass("fa-solid");
+      }
+    
+    });
+    
+    $("body").on("click", ".todoDateIcon", function() {
+    	$("hiddenDateInput").click();
+    });
     
     // -------- 수정 버튼 --------
     $("body").on("click", ".modBtn", function() {
@@ -146,45 +223,63 @@
     });
 
     
-    // -------- 상세 수정 확인 버튼 --------
-    $("body").on("click", ".detailConBtn", function() {
+    // -------- 디테일 수정 버튼 --------
+    $("body").on("click", ".detailModBtn", function() {
       let dno      = $(this).data("dno");
-      let writer   = $(this).data("writer");
       let title    = $("#detailtitle-" + dno).val();
       let duedate  = $("#detailduedate-" + dno).val();
       let memo     = $("#detailmemo-" + dno).val();
       let location = $("#detaillocation-" + dno).val();
       let data = {
-        dno: dno, writer: writer, title: title,
+        dno: dno, title: title,
         duedate: duedate, memo: memo, location: location
       };
-      let result = ajaxFunc("/todolist/updateTodo", data, "text");
+      let result = ajaxFunc("/todolist/updateDetail", data, "text");
       let nowUpdateTime = new Date().toLocaleString();
       $("#nowUpdateTime").html(nowUpdateTime);
       $("#updateTimeView").show();
+      
       doList();
     });
-
+    // -------- 디테일 삭제 버튼 --------
+    $("body").on("click", ".detailDelBtn", function() {
+      let dno      = $(this).data("dno");
+      let data = {
+        dno: dno
+      };
+      let result = ajaxFunc("/todolist/deleteDetail", data, "text");
+      let nowUpdateTime = new Date().toLocaleString();
+      $("#nowUpdateTime").html(nowUpdateTime);
+      $("#updateTimeView").show();
+      
+      $("#todoDetail").html("삭제됨");
+      doList();
+      
+    });
     
     // -------- 삭제 버튼 --------
     $("body").on("click", ".delBtn", function() {
       let dno = $(this).data("dno");
       let data = { "dno": dno };
       let result = ajaxFunc("/todolist/deleteTodo", data, "text");
-      if (result == 'success') {
-        self.location = '/todolist/list';
-      }
+      doList();
     });
 
     
-    // -------- 제목 클릭 시 상세 보기 --------
-    $("body").on("click", ".titleA", function() {
+    // -------- 더보기 클릭 시 상세 보기 --------
+    $("body").on("click", ".moreBtn", function() {
       let dno = $(this).data("dno");
-      let data = { "dno": dno };
+      let data = {"dno": dno};
       let result = ajaxFunc("/todolist/selectone", data, null);
       let html = jQuery('<div>').html(result);
       let contents = html.find("div#ajaxTodoDetail").html();
       $("#todoDetail").html(contents);
+    });
+    
+    
+ // -------- 중요도 아이콘이 눌렸을 때 --------
+    $("body").on("click", ".regStarInput", function() {
+    	$(".regStarInput").toggleClass("fa-solid");
     });
 
   }); // jQuery ready end
@@ -193,15 +288,36 @@
   // 함수 정의
   // ================================
 
+	// 제목 수정함수
+  function titleModify(dno, modValue) {
+    let title = modValue;
+    
+    let data = { "dno": dno, "title": title };
+    let result = ajaxFunc("/todolist/updateTitle", data, "text");
+    if (result == "success") {
+      // 
+    }
+  }
   // 할일 등록
   function register() {
-    let title = $("#title").val();
-    let duedate = $("#duedate").val();
-    let writer = $("#writer").val();
-    let data = { writer: writer, title: title, duedate: duedate };
+    let title = $(".regTitleInput").val();
+    let duedate = $(".regDateInput").val();
+    let star = null;
+    console.log(title,duedate);
+    let isStar = $(".regStarInput").hasClass("fa-solid");
+    console.log(isStar);
+    if ($(".regStarInput").hasClass("fa-solid")) {
+    	console.log("별표 찍혀있어야돼");
+    	star = 1;
+    } else {
+    	console.log("별표없음");
+    	star = 0;
+    }
+    let data = { title: title, duedate: duedate, star: star };
     let result = ajaxFunc("/todolist/register", data, "text");
     if (result == "success") {
-      self.location = '/todolist/list';
+    	$(".regTitleInput").val("");
+    	doList();
     }
   }
 
@@ -214,11 +330,11 @@
   }
 
   // 조건별 목록 조회
-  function selectWhere(duedate, star) {
+  function selectWhere(duedate, star, finished) {
     if (duedate == 'today') {
       duedate = new Date().toISOString().substring(0, 10);
     }
-    let data = { duedate: duedate, star: star };
+    let data = { duedate: duedate, star: star, finished: finished };
     let result = ajaxFunc("/todolist/selectwhere", data, null);
     let html = jQuery('<div>').html(result);
     let contents = html.find("div#ajaxList").html();
@@ -244,13 +360,19 @@
     let contents = html.find("div#ajaxList").html();
     $("#todolist").html(contents);
   }
-
-  // 인라인 수정 콜백
-  function modify(newValue) {
-    // 원하는 동작을 여기에 작성
-    alert('수정된 값: ' + newValue);
+  
+  function sortByFunc(sortBy) {
+	  console.log(sortBy);
+	  let data = {
+			sortBy : sortBy
+	  };
+	  let result = ajaxFunc("/todolist/selectSortBy", data, null);
+	  let html = jQuery('<div>').html(result);
+    let contents = html.find("div#ajaxList").html();
+    $("#todolist").html(contents);
   }
   </script>
+  
 </head>
 
 
@@ -264,11 +386,57 @@
       <span class="close">&times;</span>
       <h2>정렬 기준 선택</h2>
       <ul>
-        <li>중요도</li>
-        <li>기한</li>
-        <li>제목</li>
-        <li>만든 날짜</li>
+        <li onclick="sortByFunc('title')">제목순</li>
+        <li onclick="sortByFunc('duedate')">마감일 날짜순</li>
+        <li onclick="sortByFunc('dno')">등록한 날짜순</li>
       </ul>
+    </div>
+  </div>
+  <!-- 리마인더 모달 -->
+  <div id="reminderModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>리마인더 설정...... [토글]</h2>
+      
+      <table>
+      <tr>
+      
+      <td>
+      <form>
+			  <select name="language" >
+			    <option value="none">=== 선택 ===</option>
+			    <option value="korean" selected>1일 내</option>
+			    <option value="english">2일 내</option>
+			    <option value="chinese">1주 내</option>
+			    <option value="spanish">1개월 내</option>
+			    <option value="spanish">3개월 내</option>
+			  </select>
+			</form>
+      </td>
+      <td>마감예정 미리알림</td>
+      </tr>
+      </table>
+      <table>
+      <tr>
+      <td>
+      <form>
+        <select name="language" >
+          <option value="none">=== 선택 ===</option>
+          <option value="korean" selected>매일</option>
+          <option value="english">매주 일요일</option>
+          <option value="chinese">매달 1일</option>
+        </select>
+      </form>
+      </td>
+      <td>
+        <input type="datetime">
+      </td>
+      <td>에 이메일로 알림설정</td>
+      </tr>
+      </table>
+      <div>
+      [v] 중요한 할일만 알림 받기!
+      </div>
     </div>
   </div>
 
@@ -280,43 +448,70 @@
 
     <!-- 왼쪽 사이드바 -->
     <div class="left">
+    
+      
       <div class="container mt-3">
         <ul class="nav flex-column">
           <li class="nav-item">
-            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='today', star='all');">오늘 할 일</a>
+            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='today', star='all', finished='all');">오늘 할 일</a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href='javascript:void(0);' onclick="doList();">모두</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='all', star='checked');">중요</a>
+            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='all', star='all', finished='unchecked');">미완료</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='isnotnull', star='all');">기한일정</a>
+            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='all', star='checked', finished='all');">중요</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='isnull', star='all');">기한미정</a>
+            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='isnotnull', star='all', finished='all');">기한일정</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href='javascript:void(0);' onclick="selectWhere(duedate='isnull', star='all', finished='all');">기한미정</a>
           </li>
         </ul>
       </div>
+      
+      
     </div>
 
     <!-- 중앙 메인 영역 -->
     <div class="center">
+    
+      <div class="sort-reminder">
+        <!-- 정렬버튼 -->
+        <div class="sort">
+          <i id="sortBtn" class="fa-solid fa-sort"></i>
+        </div>
+        <!-- 리마인터버튼 -->
+        <div class="reminder">
+          <i id="reminderBtn" class="fa-solid fa-bell"></i>
+        </div>
+      </div>
 
       <!-- 할일 추가 바 -->
       <div class="todo-box">
         <div class="todo-input-row">
-          <span class="circle"></span>
-          <input class="todo-input" type="text" placeholder="작업 추가" />
+          <input class="regTitleInput" type="text" placeholder="할일 추가" />
         </div>
         <div class="todo-footer">
           <div class="todo-icons">
-            <span class="icon">🗓️</span>
+          
+            <!-- 날짜 설정 -->
             <span class="icon">
-              <i id="3462098" class="fa-regular fa-star" style="color:#1e3050" aria-hidden="false"></i>
+              <i id="regDuedate" class="fa-solid fa-calendar-days" style="color:#1e3050"></i>
+              <input type="hidden" id="datepicker" class="regDateInput">
             </span>
-            <span class="icon">➕</span>
+            
+            <!-- 중요도 설정 -->
+            <span>
+                <i class="fa-regular fa-star regStarInput" style="color:#1e3050"></i>
+            </span>
+            <!-- 그 외 설정하기 모달창 -->
+            <span class="icon">
+              <i class="fa-solid fa-bars" style="color:#1e3050; cursor:pointer" ></i>
+            </span>
           </div>
           <button class="add-btn" onclick="register();">추가</button>
         </div>

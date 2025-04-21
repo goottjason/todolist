@@ -19,8 +19,8 @@ public class TodoDTO {
   private String writer;
   private String title;
   private String duedate;
-  private String finished;
-  private String star;
+  private int finished;
+  private int star;
   private String memo;
   private String location;
 }

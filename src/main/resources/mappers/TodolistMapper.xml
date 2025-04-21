@@ -4,15 +4,30 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 쿼리문 모아놓는 곳 -->
 <mapper namespace="com.todolist.mapper.TodolistMapper">
+  
+  <update id="updateFinished">
+    update kjw_todolist set finished = #{finished} where dno = #{dno}
+  </update>
+  
+  <update id="updateStar">
+    update kjw_todolist set star = #{star} where dno = #{dno}
+  </update>
+  
+  <update id="updateTitle">
+    update kjw_todolist set title = #{title} where dno = #{dno}
+  </update>
+  
+  <delete id="deleteDetail">
+    delete from kjw_todolist where dno = #{dno}
+  </delete>
+  
+  
   <insert id="insertTodo">
-    insert into kjw_todolist (title, duedate, writer) values(#{title}, #{duedate}, #{writer})
+    insert into kjw_todolist (title, duedate, writer, finished, star) values(#{title}, #{duedate}, #{writer}, #{finished}, #{star})
   </insert>
   <select id="selectAllTodo" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist where writer = #{userid} order by duedate
   </select>
-  <update id="updateFinished">
-    update kjw_todolist set finished = #{finished} where dno = #{dno}
-  </update>
   <delete id="deleteTodo">
     delete from kjw_todolist where dno = #{dno}
   </delete>
@@ -65,11 +80,7 @@
       <if test="writer != null and writer != ''">
         writer = #{writer}
       </if>
-      <if test="star == 'checked'">
-        <trim prefix="AND">
-          star = '1'      
-        </trim>
-      </if>
+      
       <choose>
 	      <when  test="duedate == 'isnull'">
 	      <trim prefix="AND">
@@ -81,12 +92,52 @@
 	      	duedate is not null
 	      	</trim>
 	      </when >
-	      <when  test="duedate != null and duedate != '' and duedate != 'all'">
+	      <when  test="duedate == 'all'">
+        <trim prefix="AND">
+          </trim>
+        </when >
+	      <otherwise>
 	      <trim prefix="AND">
 	      	duedate = #{duedate}
 	      	</trim>
-	      </when >
+	      </otherwise >
       </choose>
+      
+      <choose>
+        <when  test="star == 'checked'">
+        <trim prefix="AND">
+          star = 1
+          </trim>
+        </when >
+        <when  test="star == 'unchecked'">
+        <trim prefix="AND">
+          star = 0
+          </trim>
+        </when >
+        <otherwise>
+        <trim prefix="AND">
+          </trim>
+        </otherwise >
+      </choose>
+      
+      <choose>
+        <when  test="finished == 'checked'">
+        <trim prefix="AND">
+          finished = 1
+          </trim>
+        </when >
+        <when  test="finished == 'unchecked'">
+        <trim prefix="AND">
+          finished = 0
+          </trim>
+        </when >
+        <otherwise>
+        <trim prefix="AND">
+          </trim>
+        </otherwise >
+      </choose>
+      
+      
     </where>
   </sql>
   
@@ -95,4 +146,24 @@
     <include refid="leftSidebarSelect"></include>
     order by duedate
   </select>
+  
+  
+  
+  
+  
+  
+  <select id="selectSortBy" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist where writer = #{writer}
+    <if test="sortBy == 'title'">order by title</if>
+    <if test="sortBy == 'duedate'">order by duedate</if>
+    <if test="sortBy == 'dno'">order by dno</if>
+  </select>
+  
+  
+  
+  
+<!--   select *from kjw_todolist where writer = #{writer} -->
+<!--   where duedate = date_add(curdate(), interval 1 day) 30  180 .... -->
+<!--   and star = 1 인지 0인지... -->
+  
 </mapper>
