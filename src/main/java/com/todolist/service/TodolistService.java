@@ -5,6 +5,7 @@ import java.util.List;
 import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
+import com.todolist.domain.SelectedAllDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
@@ -26,6 +27,7 @@ public interface TodolistService {
   
   // 타이틀 클릭시 업데이트
   void updateTitle(int dno, String title);
+  void updateDuedate(int dno, String duedate);
 
   // 디테일 사이드바에서 삭제
   void deleteDetail(int dno);
@@ -46,6 +48,11 @@ public interface TodolistService {
   List<CountDTO> todoCnt(String writer, String today);
 
   List<TodoDTO> listDuedate(String writer);
+
+
+  void updateSeletedAll(SelectedAllDTO selectedAllDTO);
+
+
 
 
 }

@@ -106,7 +106,7 @@
   color: red;
 }
 
-li.completed .titleDiv, li.completed .duedateDiv {
+td.completed .titleSpan, li.completed .duedateDiv {
   text-decoration: line-through;
   color: gray;
 }
@@ -294,15 +294,22 @@ li.completed .titleDiv, li.completed .duedateDiv {
   cursor: pointer;
 }
 
-.edit-input {
+.edit-input-title {
   border: none;
   background: transparent;
   font-size: inherit;
-  width: 80px;
+/*   width: 100px; */
   outline: none;
   padding: 0;
 }
-
+.edit-input-duedate {
+  border: none;
+  background: transparent;
+  font-size: inherit;
+/*   width: 80px; */
+  outline: none;
+  padding: 0;
+}
 .titleSpan {
   /* 손가락 모양으로 포인터 */
   cursor: pointer;

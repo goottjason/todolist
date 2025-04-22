@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
+import com.todolist.domain.SelectedAllDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.mapper.TodolistMapper;
@@ -47,7 +48,12 @@ public class TodolistServiceImpl implements TodolistService {
   public void updateTitle(int dno, String title) {
     todolistMapper.updateTitle(dno, title);
   }
-  
+
+	@Override
+	public void updateDuedate(int dno, String duedate) {
+		todolistMapper.updateDuedate(dno, duedate);
+		
+	}
   // 디테일 사이드바에서 삭제
   @Override
   public void deleteDetail(int dno) {
@@ -105,6 +111,13 @@ public class TodolistServiceImpl implements TodolistService {
     // TODO Auto-generated method stub
     return todolistMapper.selectMulti(selectDTO);
   }
+
+  @Override
+  public void updateSeletedAll(SelectedAllDTO selectedAllDTO) {
+    todolistMapper.updateSeletedAll(selectedAllDTO);
+    
+  }
+
 
 
 

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
+import com.todolist.domain.SelectedAllDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
@@ -23,6 +24,7 @@ public interface TodolistMapper {
 
   // 타이틀 클릭시 업데이트
   void updateTitle(@Param("dno") int dno, @Param("title") String title);
+  void updateDuedate(@Param("dno") int dno, @Param("duedate") String duedate);
   
   // 디테일 사이드바에서 삭제
   void deleteDetail(int dno);
@@ -48,5 +50,8 @@ public interface TodolistMapper {
   List<TodoDTO> selectListDuedate(@Param("writer") String writer);
 
   List<TodoDTO> selectMulti(SelectDTO selectDTO);
+
+  void updateSeletedAll(SelectedAllDTO selectedAllDTO);
+
 
 }

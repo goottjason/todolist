@@ -14,10 +14,35 @@
   <update id="updateTitle">
     update kjw_todolist set title = #{title} where dno = #{dno}
   </update>
+  <update id="updateDuedate">
+    update kjw_todolist set duedate = #{duedate} where dno = #{dno}
+  </update>
   <update id="updateTodo">
     update kjw_todolist set title = #{title}, duedate = #{duedate}, memo=#{memo}, location=#{location} where dno = #{dno}
   </update>
-  
+  <update id="updateSeletedAll">
+    update kjw_todolist
+    <set>
+      <choose>
+        <when  test="finished == '9'">
+        </when>
+        <otherwise>
+          finished = #{finished},
+        </otherwise >
+      </choose>
+      <choose>
+        <when test="star == '9'">
+        </when>
+        <otherwise>
+          star = #{star},
+        </otherwise >
+      </choose>
+      <if test="duedate != null and duedate != ''">
+        duedate = #{duedate}
+      </if>
+    </set>
+    where dno in <foreach collection="selectedArr" item="i" separator="," open="(" close=")">#{i}</foreach>
+  </update>
   <!-- ■■■ DELETE ■■■ -->
   <delete id="deleteDetail">
     delete from kjw_todolist where dno = #{dno}
@@ -88,7 +113,7 @@
   <select id="selectMulti" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist
     <include refid="selectMultiRefid"></include>
-    order by ${orderby} ${ordermethod}
+    order by finished asc, ${orderby} ${ordermethod}
   </select>
   
   <sql id="selectMultiRefid">

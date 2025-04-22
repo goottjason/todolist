@@ -1,4 +1,6 @@
-﻿function ajaxFunc(url, data, dataType=null) {
+﻿
+
+function ajaxFunc(url, data, dataType=null) {
   let result = "";
   $.ajax({
     url : url, // 데이터가 송수신될 서버의 주소
@@ -16,6 +18,29 @@
   }); 
   return result;
 }
+
+
+function ajaxFunc2(url, contentType, dataType, data) {
+  let result = "";
+  $.ajax({
+    url : url,
+    type : "POST",
+    contentType: contentType, // 클라이언트가 서버로 보내는 데이터타입
+    dataType : dataType, // 서버로부터 받을 응답 데이터의 타입
+    data : data,
+    async : false,
+    success : function(data) {
+      result = data;
+    },
+    error : function() {
+    },
+    complete : function() {
+    },
+  }); 
+  return result;
+}
+
+
 
 function outputMsg(errorMsg, tagObj, color) {
   // tagObj 요소의, 그 다음 요소에 출력

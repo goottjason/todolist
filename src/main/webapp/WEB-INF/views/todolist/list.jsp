@@ -83,8 +83,10 @@
 	    // 원하는 형식으로 변환 (예: YYYY-MM-DD)
 	    var value = date.toLocaleDateString('sv-SE');
 	    document.getElementById("selected-date").value = value;
-	    console.log(value);
-	    doSearch("duedate", value);
+	    
+	    sessionStorage.setItem("status", "calendarList");
+	    sessionStorage.setItem("calPickDate", value);
+	    doList();
 	  });
   	
 		// -------- 캘린더아이콘 클릭시 이벤트 --------
@@ -116,15 +118,15 @@
 
 	  <!-- 센터 > 목록 > 제목 -->
     // -------- 제목 영역 클릭시 수정모드로 전환 --------
-    $(document).on('click', '.titleSpan', function() {
-      let span  = $(this);
-      let input = span.siblings('.edit-input');
+    $(document).on('click', '.titleTd', function() {
+      let span  = $(this).children('.titleSpan');
+      let input = span.siblings('.edit-input-title');
       input.val(span.text()).show().focus();
       span.hide();
     });
     
  		// -------- 엔터 클릭시 --------
-    $(document).on('keydown', '.edit-input', function(e) {
+    $(document).on('keydown', '.edit-input-title', function(e) {
       if (e.key === "Enter") {
     	  let dno = $(this).data("dno");
         let value = $(this).val();
@@ -135,7 +137,45 @@
       }
     });
  		
- 		
+    $(document).on('blur', '.edit-input-title', function() {
+      	  let dno = $(this).data("dno");
+          let value = $(this).val();
+          let span = $(this).siblings('.titleSpan');
+          span.text(value).show();
+          $(this).hide();
+          titleModify(dno, value); 
+
+      });
+	  <!-- 센터 > 목록 > 날짜 -->
+	    // -------- 날짜 영역 클릭시 수정모드로 전환 --------
+	    $(document).on('click', '.duedateTd', function() {
+	      let span  = $(this).children('.duedateSpan');
+	      let input = span.siblings('.edit-input-duedate');
+	      input.val(span.text()).show().focus();
+	      span.hide();
+	    });
+	    
+	 		// -------- 엔터 클릭시 --------
+	    $(document).on('keydown', '.edit-input-duedate', function(e) {
+	      if (e.key === "Enter") {
+	    	  let dno = $(this).data("dno");
+	        let value = $(this).val();
+	        let span = $(this).siblings('.duedateSpan');
+	        span.text(value).show();
+	        $(this).hide();
+	        titleModify(dno, value); 
+	      }
+	    }); 		
+	    $(document).on('blur', '.edit-input-duedate', function() {
+
+		    	  let dno = $(this).data("dno");
+		        let value = $(this).val();
+		        let span = $(this).siblings('.duedateSpan');
+		        span.text(value).show();
+		        $(this).hide();
+		        duedateModify(dno, value); 
+
+	      });
  		
  		
  		
@@ -163,6 +203,7 @@
 		// -------- 모달 외부 클릭시 --------
     $(document).on('click', function() {
       $('#reminderModal').hide();
+      
     });
 
     
@@ -201,7 +242,38 @@
     });
     
     
-    
+ 		// '선택수정' 버튼 클릭 시 모달 열기
+    $('#multiEditBtn').on('click', function() {
+      $('#editModalOverlay').fadeIn(150);
+    });
+
+    // 모달 '취소' 버튼 또는 오버레이 클릭 시 닫기
+    $('#modalCancelBtn, #editModalOverlay').on('click', function(e) {
+      // 모달 바깥쪽(오버레이) 클릭 시에만 닫기
+      if (e.target.id === 'editModalOverlay' || e.target.id === 'modalCancelBtn') {
+        $('#editModalOverlay').fadeOut(150);
+      }
+    });
+
+    // 모달창 클릭 시 오버레이 닫힘 방지
+    $('#editModal').on('click', function(e) {
+      e.stopPropagation();
+    });
+
+    // 폼 제출 시(수정 버튼)
+    $('#multiEditForm').on('submit', function(e) {
+      e.preventDefault();
+      // 선택된 값 가져오기
+      let finished = $('input[name="finished"]:checked').val() ?? '';
+      let star = $('input[name="star"]:checked').val() ?? '';
+      let duedate = $('input[name="duedate"]').val() ?? '';
+
+      let selectedArr = $('.rowCheckbox:checked').map(function(){ return $(this).data('dno'); }).get();
+// 			alert(duedate);
+      updateSeletedAll(selectedArr, finished, star, duedate);
+      
+      $('#editModalOverlay').fadeOut(150);
+    });   
     
     
     
@@ -248,7 +320,6 @@
     	let star = null;
     	// 
     	let solid = $(this).hasClass("fa-solid");
-    	console.log(solid);
     	// 채워져있으면 해제해야 함
     	if(solid) {
     		star = 0;
@@ -366,6 +437,34 @@
     	$(".regStarInput").toggleClass("fa-solid");
     });
 
+ 
+ 
+    // 전체 선택 체크박스 클릭 시
+    $('#selectAllCheckbox').on('change', function() {
+      $('.rowCheckbox').prop('checked', this.checked);
+    });
+
+    // 각 행 체크박스 클릭 시
+    $(document).on('change', '.rowCheckbox', function() {
+      // 하나라도 체크 해제되면 전체선택 체크박스 해제
+      if (!this.checked) {
+        $('#selectAllCheckbox').prop('checked', false);
+      } else {
+        // 모두 체크되면 전체선택 체크박스 체크
+        var allChecked = $('.rowCheckbox').length === $('.rowCheckbox:checked').length;
+        $('#selectAllCheckbox').prop('checked', allChecked);
+      }
+    }); 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
   }); // jQuery ready end
 
   // ================================
@@ -381,16 +480,12 @@
 	
 	function listDuedate() {
 		let result = ajaxFunc("/todolist/listDuedate", null, "text");
-		console.log(result);
 		let info = jQuery('<div>').html(result);
-		console.log(info);
-    console.log(info.find(".duedateByTodo"));
     spans = info.find(".duedateByTodo");
     let tempList = new Array();
     spans.each(function() {
     	tempList.push($(this).html());
     });
-    console.log(tempList);
     return tempList;
   }
 	  
@@ -400,10 +495,7 @@
 			  today : today
 	  }
 	  let result = ajaxFunc("/todolist/todoCnt", data, "text");
-	  console.log(result);
 	  let info = jQuery('<div>').html(result);
-	  console.log(info);
-	  console.log(info.find("#spanTodayCnt").html());
 	  
 	  $("#todayCnt").html(info.find("#spanTodayCnt").html());
 	  $("#allCnt").html(info.find("#spanAllCnt").html());
@@ -414,7 +506,25 @@
 	  
   }
 	
-
+	
+	function updateSeletedAll(selectedArr, finished, star, duedate) {	
+		
+		console.log(typeof(selectedArr), typeof(finished), typeof(star), typeof(duedate));
+		console.log(selectedArr, finished, star, duedate);
+		let data = JSON.stringify({
+	    selectedArr: selectedArr,
+	    finished: finished,
+	    star: star,
+	    duedate: duedate
+		});
+		let result = ajaxFunc2('/todolist/updateSeletedAll', 'application/json', 'text', data);
+    if (result == "success") {
+      alert("수정되었습니다.");
+      doList();
+    } else {
+    	alert("적어도 하나는 선택해야 수정이 된단다.");
+    }
+	}
 	// 제목 수정함수
   function titleModify(dno, modValue) {
     let title = modValue;
@@ -425,6 +535,15 @@
       // 
     }
   }
+  function duedateModify(dno, modValue) {
+	    let duedate = modValue;
+	    
+	    let data = { "dno": dno, "duedate": duedate };
+	    let result = ajaxFunc("/todolist/updateDuedate", data, "text");
+	    if (result == "success") {
+	      // 
+	    }
+	  }
   // 할일 등록
   function register() {
     let title = $(".regTitleInput").val();
@@ -453,11 +572,20 @@
     let ordermethod = sessionStorage.getItem("ordermethod");
     let orderby = sessionStorage.getItem("orderby");
     let status = sessionStorage.getItem("status");
-	  console.log("■ doList() : ", ordermethod, orderby, status);
+// 	  console.log("■ doList() : ", ordermethod, orderby, status);
+    
+	  let duedate = null;
+    if (status == "onlyTodayList") {
+    	duedate = new Date().toISOString().substring(0, 10);
+    } else if (status == "calendarList") {
+    	duedate = sessionStorage.getItem("calPickDate");
+    }
+    
 	  let data = null;
-	  if (status == "onlyTodayList") {
+	  if (status == "onlyTodayList" || status == "calendarList") {
+		  duedate = 
 		  data = {
-				duedate : 'today',
+				duedate : duedate,
 				star : 'all',
 				finished : 'all',
 			  ordermethod : ordermethod,
@@ -484,7 +612,7 @@
         ordermethod : ordermethod,
         orderby : orderby
 		  }
-	  } else if (status == "isDuedateList") {
+	  } else if (status == "isNotNullDuedateList") {
 		  data = {
         duedate : 'isnotnull',
         star : 'all',
@@ -493,7 +621,7 @@
         orderby : orderby
 		  }
 		  
-	  } else if (status == "isNotDuedateList") {
+	  } else if (status == "isNullDuedateList") {
       data = {
         duedate : 'isnull',
         star : 'all',
@@ -502,14 +630,11 @@
         orderby : orderby
       }
 	  } else if (status == "searchList") {
-		  
-	  } else if (status == "calendarList") {
-		  
 	  }
 	  
 //     if (!result) 
    	let result = ajaxFunc("/todolist/selectMulti", data, null);
-    console.log("★★★★★★★★★★★★★★★★★", result);
+//     console.log("★★★★★★★★★★★★★★★★★", result);
     let html = jQuery('<div>').html(result);
     let contents = html.find("div#ajaxList").html();
     $("#todolist").html(contents);
@@ -535,10 +660,10 @@
     	sessionStorage.setItem("status", "unfinishedList");
     } else if (status == "starList") {
     	sessionStorage.setItem("status", "starList");
-    } else if (status == "isDuedateList") {
-    	sessionStorage.setItem("status", "isDuedateList");
-    } else if (status == "isNotDuedateList") {
-    	sessionStorage.setItem("status", "isNotDuedateList");
+    } else if (status == "isNotNullDuedateList") {
+    	sessionStorage.setItem("status", "isNotNullDuedateList");
+    } else if (status == "isNullDuedateList") {
+    	sessionStorage.setItem("status", "isNullDuedateList");
     } else if (status == "searchList") {
     	sessionStorage.setItem("status", "searchList");
     } else if (status == "calendarList") {
@@ -663,7 +788,7 @@
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
-            <a href="javascript:void(0);" onclick="selectWhere('isduedateList');"
+            <a href="javascript:void(0);" onclick="selectWhere('isNotNullDuedateList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">기한이
               있는 To-Do</a>
               <span id="isDuedateCnt" style="color: #b3b3b3; font-size: 15px;"></span>
@@ -671,7 +796,7 @@
           <li
             style="display: flex; align-items: center; padding: 13px 18px;">
             <a href="javascript:void(0);"
-            onclick="selectWhere('isNotDuedateList');"
+            onclick="selectWhere('isNullDuedateList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">기한이
               없는 To-Do</a>
               <span id="isNotDuedateCnt" style="color: #b3b3b3; font-size: 15px;"></span>
@@ -787,6 +912,65 @@
 
   <!-- 푸터 영역 -->
   <jsp:include page="../footer.jsp"></jsp:include>
+  
+  
+  <!-- 모달 오버레이 및 모달창 -->
+  <div id="editModalOverlay"
+       style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; 
+              background:rgba(0,0,0,0.3); z-index:9999;">
+  <div id="editModal"
+       style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+              background:#fff; border-radius:10px; box-shadow:0 4px 24px #0002;
+              padding:32px 32px 24px 32px; min-width:340px; max-width:90vw; text-align:center;">
+    <h3 style="margin-bottom:24px; color:#0f1d41;">선택한 할일 일괄 수정</h3>
+    <form id="multiEditForm">
+      <div style="margin-bottom:18px; text-align:left;">
+        <label style="font-weight:500; margin-right:16px;">완료 상태</label>
+        <label style="margin-right:10px;">
+          <input type="radio" name="finished" value="1"> 완료로 변경
+        </label>
+        <label>
+          <input type="radio" name="finished" value="0"> 미완료로 변경
+        </label>
+        <label>
+          <input type="radio" name="finished" value="9" checked > 그대로 두기
+        </label>
+      </div>
+      <div style="margin-bottom:18px; text-align:left;">
+        <label style="font-weight:500; margin-right:16px;">중요도</label>
+        <label style="margin-right:10px;">
+          <input type="radio" name="star" value="1"> 중요로 변경
+        </label>
+        <label>
+          <input type="radio" name="star" value="0"> 중요 해제
+        </label>
+        <label>
+          <input type="radio" name="star" value="9" checked > 그대로 두기
+        </label>
+      </div>
+      <div style="margin-bottom:18px; text-align:left;">
+        <label style="font-weight:500; margin-right:16px;">마감일</label>
+        <input type="date" name="duedate" style="padding:4px 8px; border-radius:4px; border:1px solid #ccc;">
+        <span style="font-size:14px"><br>그대로 두려면 날짜를 선택하지 마세요</span>
+      </div>
+      <div style="margin-top:28px;">
+        <button type="submit" style="
+          background:#1976d2; color:#fff; border:none; border-radius:6px;
+          padding:8px 24px; font-size:16px; font-weight:500; margin-right:10px; cursor:pointer;">
+          수정
+        </button>
+        <button type="button" id="modalCancelBtn" style="
+          background:#fff; color:#1976d2; border:1.5px solid #1976d2; border-radius:6px;
+          padding:8px 24px; font-size:16px; font-weight:500; cursor:pointer;">
+          취소
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+  
+  
+  
 </body>
 </html>
 

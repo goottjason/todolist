@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
+import com.todolist.domain.SelectedAllDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.domain.UserDTO;
@@ -169,6 +171,50 @@ public class TodolistController {
     }
     return "success";
   }
+  // 타이틀 클릭시 업데이트
+  @PostMapping("/updateDuedate")
+  @ResponseBody
+  public String updateDuedate(@RequestParam("dno") int dno, @RequestParam("duedate") String duedate, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+
+    log.info("◆◆◆◆◆ dno: {}", dno);
+    try {
+      todolistService.updateDuedate(dno, duedate);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
+    return "success";
+  }
+  
+  // @RequestParam: GET, 폼 전송, 간단한 값 전달
+  // @RequestBody: 요청 body → 자바 객체로 변환 / 요청 데이터 받기/ REST API, AJAX, JSON 데이터 등
+  // @ResponseBody: 자바 객체 → 응답 body로 변환 / 데이터 응답 보내기
+  @PostMapping("/updateSeletedAll")
+  @ResponseBody
+  public String updateSeletedAll(@RequestBody SelectedAllDTO selectedAllDTO,HttpSession session) {
+    log.info("**************{}", selectedAllDTO);
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "redirect:/user/login";
+    }
+    // 수정할 데이터가 없는 경우
+    if (selectedAllDTO.isEmptyUpdateData()) {
+      return "fail";
+    }
+    try {
+      todolistService.updateSeletedAll(selectedAllDTO);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return "fail";
+    }
+    return "success";
+  }
+
+   
   
   // 디테일 사이드바에서 업데이트
   @PostMapping("/updateDetail")
