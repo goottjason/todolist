@@ -2,12 +2,17 @@ package com.todolist.service;
 
 import java.util.List;
 
+import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
 public interface TodolistService {
-
+  
+  List<TodoDTO> selectMulti(SelectDTO selectDTO);
+  
+  
   int register(TodoDTO todoDTO);
 
   List<TodoDTO> viewAll(String userid);
@@ -37,6 +42,10 @@ public interface TodolistService {
   List<TodoDTO> selectwhere(SortDTO sortDTO);
 
   List<TodoDTO> selectSortBy(String writer, String sortBy);
+
+  List<CountDTO> todoCnt(String writer, String today);
+
+  List<TodoDTO> listDuedate(String writer);
 
 
 }

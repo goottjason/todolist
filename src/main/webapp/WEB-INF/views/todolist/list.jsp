@@ -35,15 +35,16 @@
 <!-- 자바스크립트 -->
 <script type="text/javascript">
 
-
-
   $(function() {
-	  
-	  
 	  
 	  <!-- 센터 초기화 -->
 		// -------- 페이지 초기화 --------
-    doList();
+		sessionStorage.setItem("ordermethod", "desc");
+		sessionStorage.setItem("orderby", "duedate");
+		sessionStorage.setItem("status", "allList"); // onlyTodayList, allList,	unfinishedList,	starList,	isduedateList, isNotDuedateList, searchList, calendarList
+    initialList();
+//     countTodo();
+		
     let today = new Date().toISOString().substring(0, 10);
     $("#duedate, #from, #to").val(today);
     
@@ -54,7 +55,10 @@
 	  // 캘린더 생성
 	  var myCalendar = jsCalendar.new("#my-calendar");
 	  // 기한이 있는 날짜들을 중복없이 가져와서 배열로 만들자.
-	  let specialDates = ["2025-04-21", "2025-04-24"];
+	  
+	  // 리스트로 반환받음
+	  
+	  let specialDates = listDuedate();
 	  
 	  // 날짜 렌더링 시 스타일 적용
 	  myCalendar.onDateRender(function(date, element, info){
@@ -66,7 +70,8 @@
 
 	    if(specialDates.includes(value)){
 	      element.style.fontWeight = 'bold';
-	      element.style.color = '#2453E3'; // 퍼플렉시티 시그니처 블루
+	      element.style.color = '#0f1d41'; //'#2453E3'; // 퍼플렉시티 시그니처 블루
+	      element.style.fontSize = '16px';
 	    }
 	  });
 	  
@@ -78,7 +83,8 @@
 	    // 원하는 형식으로 변환 (예: YYYY-MM-DD)
 	    var value = date.toLocaleDateString('sv-SE');
 	    document.getElementById("selected-date").value = value;
-	    console.log(value);	    
+	    console.log(value);
+	    doSearch("duedate", value);
 	  });
   	
 		// -------- 캘린더아이콘 클릭시 이벤트 --------
@@ -116,6 +122,7 @@
       input.val(span.text()).show().focus();
       span.hide();
     });
+    
  		// -------- 엔터 클릭시 --------
     $(document).on('keydown', '.edit-input', function(e) {
       if (e.key === "Enter") {
@@ -165,16 +172,33 @@
     $("#searchWord").on("keyup", function() {
       let searchWord = $(this).val();
       if (searchWord.length != 0) {
-        doSearch();       
+        doSearch("title", searchWord);       
       } else {
-        let result = ajaxFunc("/todolist/selectall", null, null);
+        let result = ajaxFunc("/todolist/selectMulti", null, null);
         doList(result);
       }
     });
 
 
-    
-    
+    // 오더바이
+    $("body").on("click", "#orderMethodSelect", function() {
+    	
+    	let status = $(this).hasClass("fa-arrow-up-wide-short"); // 오름차순 상태
+   	  $(this).toggleClass("fa-arrow-up-wide-short");
+   	  $(this).toggleClass("fa-arrow-down-wide-short");
+      if(status) {
+    	  // 클릭해서 내림차순 상태로 변경
+    	  sessionStorage.setItem("ordermethod", "desc");
+    	  console.log("내림차순으로 바뀜");
+    	  doList();
+    	  
+      } else {
+    	  sessionStorage.setItem("ordermethod", "asc");
+        console.log("오름차순으로 바뀜");
+        doList();
+      }
+      
+    });
     
     
     
@@ -212,6 +236,12 @@
       }
     });
     
+    
+    $("body").on("change", "#orderbySelect", function() {
+    	sessionStorage.setItem("orderby", $("#orderbySelect").val());
+    	doList();
+    });
+    
     // -------- 중요도 아이콘이 눌렸을 때 --------
     $("body").on("click", ".starIcon", function() {
     	let dno = $(this).data("dno");
@@ -232,6 +262,7 @@
         // checked가 true이면, "completed" 추가하고, false면 삭제
         $("#dstar-" + dno).toggleClass("fa-solid");
         $("#detailstar-"+dno).toggleClass("fa-solid");
+        countTodo();
       }
     });
     
@@ -287,6 +318,7 @@
       $("#updateTimeView").show();
       
       doList();
+      countTodo();
     });
     // -------- 디테일 삭제 버튼 --------
     $("body").on("click", ".detailDelBtn", function() {
@@ -299,8 +331,10 @@
       $("#nowUpdateTime").html(nowUpdateTime);
       $("#updateTimeView").show();
       
-      $("#todoDetail").html("삭제됨");
+      // 삭제되면 비우기
+      $("#todoDetail").html("");
       doList();
+      countTodo();
       
     });
     
@@ -309,7 +343,10 @@
       let dno = $(this).data("dno");
       let data = { "dno": dno };
       let result = ajaxFunc("/todolist/deleteTodo", data, "text");
+      // 삭제되면 비우기
+      $("#todoDetail").html("");
       doList();
+      countTodo();
     });
 
     
@@ -334,6 +371,49 @@
   // ================================
   // 함수 정의
   // ================================
+	
+	function initialList() {
+		sessionStorage.setItem("ordermethod", "desc");
+    sessionStorage.setItem("orderby", "duedate");
+    sessionStorage.setItem("status", "allList");
+    doList();
+  }
+	
+	function listDuedate() {
+		let result = ajaxFunc("/todolist/listDuedate", null, "text");
+		console.log(result);
+		let info = jQuery('<div>').html(result);
+		console.log(info);
+    console.log(info.find(".duedateByTodo"));
+    spans = info.find(".duedateByTodo");
+    let tempList = new Array();
+    spans.each(function() {
+    	tempList.push($(this).html());
+    });
+    console.log(tempList);
+    return tempList;
+  }
+	  
+	function countTodo() {
+		let today = new Date().toISOString().substring(0, 10);
+	  let data = {
+			  today : today
+	  }
+	  let result = ajaxFunc("/todolist/todoCnt", data, "text");
+	  console.log(result);
+	  let info = jQuery('<div>').html(result);
+	  console.log(info);
+	  console.log(info.find("#spanTodayCnt").html());
+	  
+	  $("#todayCnt").html(info.find("#spanTodayCnt").html());
+	  $("#allCnt").html(info.find("#spanAllCnt").html());
+	  $("#unfinishedCnt").html(info.find("#spanUnfinishedCnt").html());
+	  $("#starCnt").html(info.find("#spanStarCnt").html());
+	  $("#isDuedateCnt").html(info.find("#spanIsDuedateCnt").html());
+	  $("#isNotDuedateCnt").html(info.find("#spanIsNotDuedateCnt").html());
+	  
+  }
+	
 
 	// 제목 수정함수
   function titleModify(dno, modValue) {
@@ -354,10 +434,8 @@
     let isStar = $(".regStarInput").hasClass("fa-solid");
     console.log(isStar);
     if ($(".regStarInput").hasClass("fa-solid")) {
-    	console.log("별표 찍혀있어야돼");
     	star = 1;
     } else {
-    	console.log("별표없음");
     	star = 0;
     }
     let data = { title: title, duedate: duedate, star: star };
@@ -365,44 +443,117 @@
     if (result == "success") {
     	$(".regTitleInput").val("");
     	doList();
+    	countTodo();
     }
   }
 
-  // 할일 목록 조회
-  function doList(result) {
-    if (!result) result = ajaxFunc("/todolist/selectall", null, null);
+  
+  // :doList()
+  function doList() {
+    let ordermethod = sessionStorage.getItem("ordermethod");
+    let orderby = sessionStorage.getItem("orderby");
+    let status = sessionStorage.getItem("status");
+	  console.log("■ doList() : ", ordermethod, orderby, status);
+	  let data = null;
+	  if (status == "onlyTodayList") {
+		  data = {
+				duedate : 'today',
+				star : 'all',
+				finished : 'all',
+			  ordermethod : ordermethod,
+        orderby : orderby
+		  }
+	  } else if (status == "allList") {
+		  data = {			
+			  ordermethod : ordermethod,
+			  orderby : orderby
+		  }
+	  } else if (status == "unfinishedList") {
+      data = {
+ 		    duedate : 'all',
+        star : 'all',
+        finished : 'unchecked',  
+        ordermethod : ordermethod,
+        orderby : orderby
+      }		  
+	  } else if (status == "starList") {
+		  data = {
+        duedate : 'all',
+        star : 'checked',
+        finished : 'all',
+        ordermethod : ordermethod,
+        orderby : orderby
+		  }
+	  } else if (status == "isDuedateList") {
+		  data = {
+        duedate : 'isnotnull',
+        star : 'all',
+        finished : 'all',  
+        ordermethod : ordermethod,
+        orderby : orderby
+		  }
+		  
+	  } else if (status == "isNotDuedateList") {
+      data = {
+        duedate : 'isnull',
+        star : 'all',
+        finished : 'all',  
+        ordermethod : ordermethod,
+        orderby : orderby
+      }
+	  } else if (status == "searchList") {
+		  
+	  } else if (status == "calendarList") {
+		  
+	  }
+	  
+//     if (!result) 
+   	let result = ajaxFunc("/todolist/selectMulti", data, null);
+    console.log("★★★★★★★★★★★★★★★★★", result);
     let html = jQuery('<div>').html(result);
     let contents = html.find("div#ajaxList").html();
     $("#todolist").html(contents);
   }
 
   // 조건별 목록 조회
-  function selectWhere(duedate, star, finished) {
-    if (duedate == 'today') {
-      duedate = new Date().toISOString().substring(0, 10);
+//   function selectWhere(duedate, star, finished) {
+//     if (duedate == 'today') {
+//       duedate = new Date().toISOString().substring(0, 10);
+//     }
+//     let data = { duedate: duedate, star: star, finished: finished };
+//     let result = ajaxFunc("/todolist/selectMulti", data, null);
+//     let html = jQuery('<div>').html(result);
+//     let contents = html.find("div#ajaxList").html();
+//     $("#todolist").html(contents);
+//   }
+  function selectWhere(status) {
+	  if (status == "onlyTodayList") {
+		  sessionStorage.setItem("status", "onlyTodayList");	      
+    } else if (status == "allList") {
+    	sessionStorage.setItem("status", "allList");   
+    } else if (status == "unfinishedList") {
+    	sessionStorage.setItem("status", "unfinishedList");
+    } else if (status == "starList") {
+    	sessionStorage.setItem("status", "starList");
+    } else if (status == "isDuedateList") {
+    	sessionStorage.setItem("status", "isDuedateList");
+    } else if (status == "isNotDuedateList") {
+    	sessionStorage.setItem("status", "isNotDuedateList");
+    } else if (status == "searchList") {
+    	sessionStorage.setItem("status", "searchList");
+    } else if (status == "calendarList") {
+    	sessionStorage.setItem("status", "calendarList");
     }
-    let data = { duedate: duedate, star: star, finished: finished };
-    let result = ajaxFunc("/todolist/selectwhere", data, null);
-    let html = jQuery('<div>').html(result);
-    let contents = html.find("div#ajaxList").html();
-    $("#todolist").html(contents);
+	  doList();
   }
 
   // 검색
-  function doSearch() {
-    let searchTypes = "title";
-    let searchWord = $("#searchWord").val();
-    let finished = $('input:radio[name="finished"]:checked').val();
-    let from = $("#from").val();
-    let to = $("#to").val();
+  function doSearch(searchTypes, searchWord) {
     let data = {
       searchTypes: searchTypes,
       searchWord: searchWord,
-      finished: finished,
-      from: from,
-      to: to
     };
-    let result = ajaxFunc("/todolist/search", data, null);
+    let result = ajaxFunc("/todolist/selectMulti", data, null);
     let html = jQuery('<div>').html(result);
     let contents = html.find("div#ajaxList").html();
     $("#todolist").html(contents);
@@ -487,41 +638,43 @@
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
             <a href="javascript:void(0);"
-            onclick="selectWhere(duedate='today', star='all', finished='all');"
+            onclick="selectWhere('onlyTodayList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">오늘
-              To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+              To-Do</a> <span id="todayCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
-            <a href="javascript:void(0);" onclick="doList();"
+            <a href="javascript:void(0);" onclick="selectWhere('allList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">모든
-              To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+              To-Do</a> <span id="allCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
-            <a href="javascript:void(0);" onclick=""
-            style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">해야
-              할 To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+            <a href="javascript:void(0);" onclick="selectWhere('unfinishedList');"
+            style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">미완료된 To-Do</a>
+            <span id="unfinishedCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
-            <a href="javascript:void(0);" onclick=""
+            <a href="javascript:void(0);" onclick="selectWhere('starList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">중요한
-              할 To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+              할 To-Do</a> 
+              <span id="starCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px; border-bottom: 1px solid #f6f6f6;">
-            <a href="javascript:void(0);"
-            onclick="selectWhere(duedate='all', star='all', finished='unchecked');"
+            <a href="javascript:void(0);" onclick="selectWhere('isduedateList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">기한이
-              있는 To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+              있는 To-Do</a>
+              <span id="isDuedateCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
           <li
             style="display: flex; align-items: center; padding: 13px 18px;">
             <a href="javascript:void(0);"
-            onclick="selectWhere(duedate='all', star='checked', finished='all');"
+            onclick="selectWhere('isNotDuedateList');"
             style="flex: 1; text-decoration: none; color: #222; font-size: 15px; margin-left: 10px;">기한이
-              없는 To-Do</a> <span style="color: #b3b3b3; font-size: 15px;">개수</span>
+              없는 To-Do</a>
+              <span id="isNotDuedateCnt" style="color: #b3b3b3; font-size: 15px;"></span>
           </li>
         </ul>
       </div>
@@ -555,15 +708,17 @@
             style="font-size: 15px; color: #888; display: flex; align-items: center; gap: 2px; cursor: pointer;">
             <button
               style="background: #d1d1d1; color: #fff; border: none; border-radius: 6px; padding: 2px 10px; font-size: 15px; font-family: inherit; cursor: pointer; margin-right: 6px;">
-              <i class="fa-solid fa-arrow-up-wide-short"></i>
-              <!--                           <i class="fa-solid fa-arrow-down-wide-short"></i> -->
+              <i id="orderMethodSelect" class="fa-solid fa-arrow-up-wide-short"></i>
+              <!--<i class="fa-solid fa-arrow-down-wide-short"></i> -->
             </button>
-          </label> <select
+          </label>
+          <select id="orderbySelect" name="orderbySelect"
             style="font-size: 12px; padding: 3px 8px; border: 1px solid #b7c1c7; border-radius: 5px; background: #fff; color: #222; outline: none; cursor: pointer; margin-right: 33px">
-            <option>마감일순</option>
-            <option>등록일순</option>
-            <option>제목순</option>
-          </select> <label
+            <option value="duedate">마감일순</option>
+            <option value="dno">등록일순</option>
+            <option value="title">제목순</option>
+          </select>
+          <label
             style="font-size: 15px; color: #888; display: flex; align-items: center; gap: 4px; cursor: pointer;">
             <button id="reminderBtn"
               style="background: #ebc023; color: #fff; border: none; border-radius: 6px; padding: 2px 10px; font-size: 15px; font-family: inherit; cursor: pointer; margin-right: 1px;">

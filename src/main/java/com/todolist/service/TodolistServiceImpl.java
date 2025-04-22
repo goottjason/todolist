@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.mapper.TodolistMapper;
@@ -84,6 +86,24 @@ public class TodolistServiceImpl implements TodolistService {
   public List<TodoDTO> selectSortBy(String writer, String sortBy) {
     // TODO Auto-generated method stub
     return todolistMapper.selectSortBy(writer, sortBy);
+  }
+
+  @Override
+  public List<CountDTO> todoCnt(String writer, String today) {
+    // TODO Auto-generated method stub
+    return todolistMapper.selectTodoCnt(writer, today);
+  }
+
+  @Override
+  public List<TodoDTO> listDuedate(String writer) {
+    // TODO Auto-generated method stub
+    return todolistMapper.selectListDuedate(writer);
+  }
+
+  @Override
+  public List<TodoDTO> selectMulti(SelectDTO selectDTO) {
+    // TODO Auto-generated method stub
+    return todolistMapper.selectMulti(selectDTO);
   }
 
 

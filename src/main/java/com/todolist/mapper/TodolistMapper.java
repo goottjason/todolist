@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 
+import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
@@ -40,5 +42,11 @@ public interface TodolistMapper {
   List<TodoDTO> selectwhere(SortDTO sortDTO);
 
   List<TodoDTO> selectSortBy(@Param("writer") String writer, @Param("sortBy") String sortBy);
+
+  List<CountDTO> selectTodoCnt(@Param("writer") String writer, @Param("today") String today);
+
+  List<TodoDTO> selectListDuedate(@Param("writer") String writer);
+
+  List<TodoDTO> selectMulti(SelectDTO selectDTO);
 
 }

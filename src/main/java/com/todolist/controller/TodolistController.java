@@ -1,7 +1,9 @@
 package com.todolist.controller;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -14,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
+import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.domain.UserDTO;
@@ -37,12 +41,46 @@ public class TodolistController {
     if(authUser == null) {
       return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
     } else {
-      List<TodoDTO> list = todolistService.viewAll(authUser.getUserid());
+      SelectDTO selectDTO = new SelectDTO();
+      selectDTO.setWriter(authUser.getUserid());
+      selectDTO.setOrderby("duedate");
+      selectDTO.setOrdermethod("asc");
+      log.info("●●● selectDTO : {}", selectDTO);
+      List<TodoDTO> list = todolistService.selectMulti(selectDTO);
       model.addAttribute("todoAllList", list);
       
       return "/todolist/list";
     }
   }
+  
+  
+  //아이디어정보기술
+  //타이드플로?
+
+  @PostMapping("/selectMulti")
+  public String selectMulti(SelectDTO selectDTO, HttpSession session, Model model) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    
+    if (authUser == null) {
+      return "/user/login";
+    }
+    
+    selectDTO.setWriter(authUser.getUserid());
+    
+    log.info("●●● selectDTO : {}", selectDTO);
+    
+    List<TodoDTO> list = todolistService.selectMulti(selectDTO);
+  
+    model.addAttribute("todoAllList", list);
+  
+    return "/todolist/onlylist";
+  }
+  
+  
+  
+  
+  
+  
   
   
   @PostMapping("/register") 
@@ -194,50 +232,37 @@ public class TodolistController {
     return "/todolist/onlylist";
   }
   
-  @PostMapping("/selectall")
-  public String selectall(TodoDTO todoDTO, HttpSession session, Model model) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if (authUser == null) {
-      return "/user/login";
-    }    
-    log.info("■■■■ {}", todoDTO);
-    List<TodoDTO> list = todolistService.viewAll(authUser.getUserid());
-    log.info("■■■■ {}", list);
-
-    model.addAttribute("todoAllList", list);
-    return "/todolist/onlylist";
-  }
-  
-  @PostMapping("/selectSortBy")
-  public String selectSortBy(@RequestParam("sortBy") String sortBy, HttpSession session, Model model) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if (authUser == null) {
-      return "/user/login";
-    }
-    List<TodoDTO> list = todolistService.selectSortBy(authUser.getUserid(), sortBy);
-    log.info("■■■■ {}", list);
-
-    model.addAttribute("todoAllList", list);
-    return "/todolist/onlylist";
-  }
   
   
-  @PostMapping("/selectwhere")
-  public String selectwhere(SortDTO sortDTO, HttpSession session, Model model) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if (authUser == null) {
-      return "/user/login";
-    }
-    sortDTO.setWriter(authUser.getUserid());
-    
-    log.info("★★★★★★★{}", sortDTO);
-    
-    List<TodoDTO> list = todolistService.selectwhere(sortDTO);
-    model.addAttribute("todoAllList", list);
-    log.info("■■■■■■■■{}", list);
-
-    return "/todolist/onlylist";
-  }
+//  @PostMapping("/selectSortBy")
+//  public String selectSortBy(@RequestParam("sortBy") String sortBy, HttpSession session, Model model) {
+//    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+//    if (authUser == null) {
+//      return "/user/login";
+//    }
+//    List<TodoDTO> list = todolistService.selectSortBy(authUser.getUserid(), sortBy);
+//    log.info("■■■■ {}", list);
+//
+//    model.addAttribute("todoAllList", list);
+//    return "/todolist/onlylist";
+//  }
+  
+  
+//  @PostMapping("/selectwhere")
+//  public String selectwhere(SortDTO sortDTO, HttpSession session, Model model) {
+//    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+//    if (authUser == null) {
+//      return "/user/login";
+//    }
+//    sortDTO.setWriter(authUser.getUserid());
+//    log.info("★★★★★★★{}", sortDTO);
+//    
+//    List<TodoDTO> list = todolistService.selectwhere(sortDTO);
+//    model.addAttribute("todoAllList", list);
+//    log.info("■■■■■■■■{}", list);
+//
+//    return "/todolist/onlylist";
+//  }
   
   @PostMapping("/selectone")
   public String selectone(TodoDTO todoDTO, HttpSession session, Model model) {
@@ -251,6 +276,30 @@ public class TodolistController {
     log.info("*******************{}", list);
     model.addAttribute("todo", list);
     return "/todolist/tododetail";
+  }
+  
+  @PostMapping("/todoCnt")
+  public String todoCnt(@RequestParam("today") String today, HttpSession session, Model model) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+    String writer = authUser.getUserid();
+    List<CountDTO> countDTO = todolistService.todoCnt(writer, today);
+    model.addAttribute("countList", countDTO);
+    return "/todolist/countinfo";
+  }
+  
+  @PostMapping("/listDuedate")
+  public String listDuedate(HttpSession session, Model model) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "/user/login";
+    }
+    String writer = authUser.getUserid();
+    List<TodoDTO> list = todolistService.listDuedate(writer);
+    model.addAttribute("duedateList", list);
+    return "/todolist/duedateinfo";
   }
   
   

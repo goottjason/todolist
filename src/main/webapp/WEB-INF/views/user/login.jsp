@@ -6,8 +6,11 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>To-Do</title>
 </head>
+
+
+
 <body style="background:#f8fafc; font-family:'Pretendard','Inter','Apple SD Gothic Neo',sans-serif;">
 
   <jsp:include page="../header.jsp"></jsp:include>
@@ -15,7 +18,7 @@
   <div class="container mt-5" style="max-width:380px; margin:60px auto; background:#fff; border-radius:12px; box-shadow:0 2px 16px rgba(40,60,90,0.08); padding:36px 32px 28px 32px;">
       <div class="row" style="margin:0;">
   
-      <h1 style="font-size:2rem; font-weight:700; color:#2453e3; margin-bottom:28px; text-align:center;">로그인</h1>
+      <h1 style="font-size:2rem; font-weight:700; color:#0f1d41; margin-bottom:28px; text-align:center;">로그인</h1>
       
       <c:if test="${not empty authFailMsg}">
         <div style="background:#ffe6e6; color:#d32f2f; border-radius:6px; padding:10px 14px; margin-bottom:18px; font-size:15px; text-align:center;">
@@ -37,9 +40,9 @@
         </div>
         <div style="display:flex; gap:8px; margin-top:12px;">
           <button type="submit" class="btn btn-primary"
-            style="flex:1; background:#2453e3; color:#fff; border:none; border-radius:6px; padding:10px 0; font-size:15px; font-weight:600; cursor:pointer;">로그인</button>
+            style="flex:1; background:#0f1d41; color:#fff; border:none; border-radius:6px; padding:10px 0; font-size:15px; font-weight:600; cursor:pointer;">로그인</button>
           <button type="reset" class="btn btn-secondary"
-            style="flex:1; background:#e0e4ea; color:#2453e3; border:none; border-radius:6px; padding:10px 0; font-size:15px; font-weight:600; cursor:pointer;">취소</button>
+            style="flex:1; background:#e0e4ea; color:#0f1d41; border:none; border-radius:6px; padding:10px 0; font-size:15px; font-weight:600; cursor:pointer;">취소</button>
         </div>
       </form>
             

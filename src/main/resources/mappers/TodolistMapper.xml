@@ -4,60 +4,40 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 쿼리문 모아놓는 곳 -->
 <mapper namespace="com.todolist.mapper.TodolistMapper">
-  
+  <!-- ■■■ UPDATE ■■■ -->
   <update id="updateFinished">
     update kjw_todolist set finished = #{finished} where dno = #{dno}
   </update>
-  
   <update id="updateStar">
     update kjw_todolist set star = #{star} where dno = #{dno}
   </update>
-  
   <update id="updateTitle">
     update kjw_todolist set title = #{title} where dno = #{dno}
   </update>
-  
-  <delete id="deleteDetail">
-    delete from kjw_todolist where dno = #{dno}
-  </delete>
-  
-  
-  <insert id="insertTodo">
-    insert into kjw_todolist (title, duedate, writer, finished, star) values(#{title}, #{duedate}, #{writer}, #{finished}, #{star})
-  </insert>
-  <select id="selectAllTodo" resultType="com.todolist.domain.TodoDTO">
-    select * from kjw_todolist where writer = #{userid} order by duedate
-  </select>
-  <delete id="deleteTodo">
-    delete from kjw_todolist where dno = #{dno}
-  </delete>
   <update id="updateTodo">
     update kjw_todolist set title = #{title}, duedate = #{duedate}, memo=#{memo}, location=#{location} where dno = #{dno}
   </update>
   
-  <!-- 검색 -->
-  <sql id="search">
-    <where>
-      <if test="writer != null and writer != ''">
-        writer = #{writer}
-      </if>
-      <if test="searchTypes != null and searchTypes == 'title' and searchWord != null and searchWord != ''">
-        <trim prefix="AND">
-          title like concat('%', #{searchWord},'%')        
-        </trim>
-      </if>
-      <if test="finished != null and finished != ''">
-        <trim prefix="AND">
-          finished = #{finished}
-        </trim>
-      </if>
-      <if test="from != null and from != '' and to != null and to != ''">
-        <trim prefix="AND">
-          dueDate between #{from} and #{to}
-        </trim>
-      </if>
-    </where>
-  </sql>
+  <!-- ■■■ DELETE ■■■ -->
+  <delete id="deleteDetail">
+    delete from kjw_todolist where dno = #{dno}
+  </delete>
+  <delete id="deleteTodo">
+    delete from kjw_todolist where dno = #{dno}
+  </delete>
+  
+  <!-- ■■■ INSERT ■■■ -->
+  <insert id="insertTodo">
+    insert into kjw_todolist (title, duedate, writer, finished, star) values(#{title}, #{duedate}, #{writer}, #{finished}, #{star})
+  </insert>
+  
+  <!-- ■■■ SELECT * ■■■ -->
+  
+  <select id="selectAllTodo" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist 
+      where writer = #{userid}
+      order by #{orderby} #{ordermethod}
+  </select>
   
   <select id="selectSearchTodo" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist
@@ -65,44 +45,90 @@
     order by duedate
   </select>
   
+  <!-- 리마인더 관련 -->
   <select id="selectTodoDueTommorrow" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist where duedate = date_add(curdate(), interval 1 day)
   </select>
+  
   <select id="selectOne" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist where dno = #{dno}
   </select>
   
+  <select id="selectwhere" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist
+    <include refid="leftSidebarSelect"></include>
+    order by duedate
+  </select>
   
+  <select id="selectSortBy" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist where writer = #{writer}
+    <if test="sortBy == 'title'">order by title</if>
+    <if test="sortBy == 'duedate'">order by duedate</if>
+    <if test="sortBy == 'dno'">order by dno</if>
+  </select>
   
+
+
+  <select id="selectTodoCnt" resultType="com.todolist.domain.CountDTO">
+    select count(case when duedate = #{today} then 0 end) as todayCnt,
+           count(*) as allCnt,
+           count(case when finished = 0 then 0 end) as unfinishedCnt,
+           count(case when star = 1 then 0 end) as starCnt,
+           count(case when duedate is not null then 0 end) as isDuedateCnt,
+           count(case when duedate is null then 0 end) as isNotDuedateCnt
+    from kjw_todolist where writer = #{writer};
   
-  <sql id="leftSidebarSelect">
+  </select>
+  
+  <select id="selectListDuedate" resultType="com.todolist.domain.TodoDTO">
+    select distinct duedate from kjw_todolist 
+    where writer = #{writer} and duedate is not null;
+  </select>
+
+  <select id="selectMulti" resultType="com.todolist.domain.TodoDTO">
+    select * from kjw_todolist
+    <include refid="selectMultiRefid"></include>
+    order by ${orderby} ${ordermethod}
+  </select>
+  
+  <sql id="selectMultiRefid">
     <where>
       <if test="writer != null and writer != ''">
         writer = #{writer}
       </if>
-      
+      <if test="dno != null and dno != ''">
+        <trim prefix="AND">
+        dno = #{dno}
+        </trim>
+      </if>
+      <if test="title != null and title != ''">
+        <trim prefix="AND">
+        title = #{title}
+        </trim>
+      </if>
       <choose>
-	      <when  test="duedate == 'isnull'">
-	      <trim prefix="AND">
-	      	duedate is null
-	      	</trim>
-	      </when >
-	      <when  test="duedate == 'isnotnull'">
-	      <trim prefix="AND">
-	      	duedate is not null
-	      	</trim>
-	      </when >
-	      <when  test="duedate == 'all'">
+        <when  test="duedate == 'isnull'">
+        <trim prefix="AND">
+          duedate is null
+          </trim>
+        </when >
+        <when  test="duedate == 'isnotnull'">
+        <trim prefix="AND">
+          duedate is not null
+          </trim>
+        </when >
+        <when  test="duedate == 'all'">
         <trim prefix="AND">
           </trim>
         </when >
-	      <otherwise>
-	      <trim prefix="AND">
-	      	duedate = #{duedate}
-	      	</trim>
-	      </otherwise >
+        <when test="duedate == '' or duedate == null">
+        </when>
+        <otherwise>
+        <trim prefix="AND">
+          duedate = #{duedate}
+          </trim>
+        </otherwise >
       </choose>
-      
       <choose>
         <when  test="star == 'checked'">
         <trim prefix="AND">
@@ -119,7 +145,6 @@
           </trim>
         </otherwise >
       </choose>
-      
       <choose>
         <when  test="finished == 'checked'">
         <trim prefix="AND">
@@ -136,34 +161,107 @@
           </trim>
         </otherwise >
       </choose>
-      
-      
+      <if test="searchTypes != null and searchTypes != '' and searchTypes == 'title'">
+        <trim prefix="AND">
+        title like concat('%', #{searchWord},'%')   
+        </trim>
+      </if>
+      <if test="searchTypes != null and searchTypes != '' and searchTypes == 'duedate'">
+        <trim prefix="AND">
+        searchWord = #{searchWord}
+        </trim>
+      </if>
+    </where>
+  </sql>
+
+
+
+
+  <sql id="search">
+    <where>
+      <if test="writer != null and writer != ''">
+        writer = #{writer}
+      </if>
+      <if test="searchTypes != null and searchTypes == 'title' and searchWord != null and searchWord != ''">
+        <trim prefix="AND">
+          title like concat('%', #{searchWord},'%')        
+        </trim>
+      </if>
+      <if test="searchTypes != null and searchTypes == 'duedate' and searchWord != null and searchWord != ''">
+        <trim prefix="AND">
+          dueDate = #{searchWord}
+        </trim>
+      </if>
+    </where>
+  </sql>  
+  <sql id="leftSidebarSelect">
+    <where>
+      <if test="writer != null and writer != ''">
+        writer = #{writer}
+      </if>
+      <choose>
+        <when  test="duedate == 'isnull'">
+        <trim prefix="AND">
+          duedate is null
+          </trim>
+        </when >
+        <when  test="duedate == 'isnotnull'">
+        <trim prefix="AND">
+          duedate is not null
+          </trim>
+        </when >
+        <when  test="duedate == 'all'">
+        <trim prefix="AND">
+          </trim>
+        </when >
+        <otherwise>
+        <trim prefix="AND">
+          duedate = #{duedate}
+          </trim>
+        </otherwise >
+      </choose>
+      <choose>
+        <when  test="star == 'checked'">
+        <trim prefix="AND">
+          star = 1
+          </trim>
+        </when >
+        <when  test="star == 'unchecked'">
+        <trim prefix="AND">
+          star = 0
+          </trim>
+        </when >
+        <otherwise>
+        <trim prefix="AND">
+          </trim>
+        </otherwise >
+      </choose>
+      <choose>
+        <when  test="finished == 'checked'">
+        <trim prefix="AND">
+          finished = 1
+          </trim>
+        </when >
+        <when  test="finished == 'unchecked'">
+        <trim prefix="AND">
+          finished = 0
+          </trim>
+        </when >
+        <otherwise>
+        <trim prefix="AND">
+          </trim>
+        </otherwise >
+      </choose>
     </where>
   </sql>
   
-  <select id="selectwhere" resultType="com.todolist.domain.TodoDTO">
-    select * from kjw_todolist
-    <include refid="leftSidebarSelect"></include>
-    order by duedate
-  </select>
-  
-  
-  
-  
-  
-  
-  <select id="selectSortBy" resultType="com.todolist.domain.TodoDTO">
-    select * from kjw_todolist where writer = #{writer}
-    <if test="sortBy == 'title'">order by title</if>
-    <if test="sortBy == 'duedate'">order by duedate</if>
-    <if test="sortBy == 'dno'">order by dno</if>
-  </select>
-  
-  
-  
-  
+</mapper>
+
+
+
+
+
 <!--   select *from kjw_todolist where writer = #{writer} -->
 <!--   where duedate = date_add(curdate(), interval 1 day) 30  180 .... -->
 <!--   and star = 1 인지 0인지... -->
   
-</mapper>

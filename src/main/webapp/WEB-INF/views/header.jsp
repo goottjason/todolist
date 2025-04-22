@@ -14,6 +14,11 @@
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<style>
+<%@include file="style.css"%>  
+</style>  
+  
+  
 <script type="text/javascript"><%@ include file="script.js" %></script>
 <title>To Do</title>
 <style>
@@ -38,7 +43,7 @@
             id="searchWord"
             class="form-control search-bar__input"
             name="searchWord"
-            placeholder="검색어를 입력하세요."
+            placeholder="검색어를 입력하세요"
             style="
                 width:100%;
                 padding:8px 12px 8px 38px;

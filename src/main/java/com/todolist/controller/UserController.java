@@ -123,6 +123,8 @@ public class UserController {
       // authUser가 null이 아니면, 로그인 성공
       // 세션에 추가하고, index로 이동
       session.setAttribute("authUser", authUser);
+
+      
       session.removeAttribute("authFailMsg");
       result = "redirect:/";
     } else {
