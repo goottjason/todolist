@@ -26,7 +26,11 @@
         </div>
         <c:remove var="authFailMsg" scope="session"/>
       </c:if>
-      
+      <c:if test="${not empty signupStatus}">
+        <div style="background:#e8f0fe; color:#0f1d41; border-radius:6px; padding:10px 14px; margin-bottom:18px; font-size:15px; text-align:center;">
+          ${signupStatus}
+        </div>
+      </c:if> 
       <form action="login" method="POST">
         <div class="mb-3 mt-3" style="margin-bottom:18px;">
           <label for="userid" class="form-label" style="font-weight:600; color:#333; margin-bottom:6px; display:block;">아이디</label>

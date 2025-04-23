@@ -83,11 +83,11 @@ public class UserController {
       // 1이면 가입완료 >>> index.jsp로 가자.
       // 리다이렉트 할 때 status, success 붙이고 가고싶을때
       // 쿼리스트링 붙어서 감
-      rttr.addAttribute("status", "success");
-      result = "redirect:/";
+      rttr.addFlashAttribute("signupStatus", "회원가입을 축하드립니다! 로그인 후 서비스를 이용해주세요.");
+      result = "redirect:/user/login";
     } else {
       // 가입 실패하면 다시 회원가입페이지로 이동하게끔!
-      rttr.addAttribute("status", "fail");
+      rttr.addFlashAttribute("signupStatus", "일시적 장애로 회원가입에 실패하였습니다. 다시 회원가입을 부탁드립니다.");
       result = "redirect:/user/sinup";
     }
     return result;
@@ -101,26 +101,22 @@ public class UserController {
     } else {
       user.setUserid(authUser.getUserid());
     }
-    log.info("회원정보 수정 : {}", user);
+    log.info("aa회원정보 수정 : {}", user);
     String result = "";
     userService.updateInfo(user);
-    
-    authUser = userService.login(user.getUserid(), user.getUserpwd());
- 
-    session.setAttribute("authUser", authUser);
     
     return "redirect:/user/mypage";
   }
   
   @PostMapping("/login")
-  public String loginPost(@RequestParam("userid") String userid, @RequestParam("userpwd") String userpwd, HttpSession session) {
+  public String loginPost(@RequestParam("userid") String userid, @RequestParam("userpwd") String userpwd, HttpSession session, RedirectAttributes rttr) {
     String result = "";
     
     log.info("userid : {}", userid);
     log.info("userpwd : {}", userpwd);
     
     // 로그인 에러메시지 초기화
-    session.removeAttribute("authFailMsg");
+//    session.removeAttribute("authFailMsg");
     
     UserDTO authUser = userService.login(userid, userpwd);
     
@@ -130,12 +126,12 @@ public class UserController {
       session.setAttribute("authUser", authUser);
 
       
-      session.removeAttribute("authFailMsg");
+//      session.removeAttribute("authFailMsg");
       result = "redirect:/";
     } else {
       // authUser가 null이면, 로그인 실패
       // 아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력해주세요.
-      session.setAttribute("authFailMsg", "아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
+      rttr.addFlashAttribute("authFailMsg", "아이디 또는 비밀번호가 일치하지 않습니다. 다시 입력해주세요.");
       result = "redirect:/user/login";
     }
     
@@ -155,7 +151,17 @@ public class UserController {
       return 0;
     }
   }
-
+  @PostMapping("/uniqueEmailCheck")
+  @ResponseBody
+  public int uniqueEmailCheck(@RequestParam("userInputEmail") String userInputEmail) {
+    if(userService.uniqueEmailCheck(userInputEmail) == 1) { 
+      // 1이면 중복
+      return 1;
+    } else { 
+      return 0;
+    }
+  }
+  
   @PostMapping("/callSendEmail")
   public ResponseEntity<String> sendEmailAuthCode(@RequestParam String useremail, HttpSession session) {
     log.info("tmpUserEmail: {}", useremail);

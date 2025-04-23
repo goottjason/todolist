@@ -17,7 +17,11 @@ public class UserServiceImpl implements UserService {
   public int idIsDuplicate(String userid) {
     return userMapper.selectIdIsDuplicate(userid);
   }
-
+  @Override
+  public int uniqueEmailCheck(String userInputEmail) {
+    // TODO Auto-generated method stub
+    return userMapper.uniqueEmailCheck(userInputEmail);
+  }
   @Override
   public int insertUser(UserDTO user) {
     return userMapper.insertUser(user);
@@ -37,5 +41,7 @@ public class UserServiceImpl implements UserService {
   public void updateInfo(UserDTO user) {
     userMapper.updateInfo(user);    
   }
+
+
 
 }

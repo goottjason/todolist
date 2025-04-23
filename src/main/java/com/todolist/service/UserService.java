@@ -12,4 +12,6 @@ public interface UserService {
   int existingPwdCheck(String userid, String userpwd);
 
   void updateInfo(UserDTO user);
+
+  int uniqueEmailCheck(String userInputEmail);
 }

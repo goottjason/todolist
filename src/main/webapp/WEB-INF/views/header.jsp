@@ -14,6 +14,7 @@
   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Glatic:wght@700&display=swap" rel="stylesheet">
 <style>
 <%@include file="style.css"%>  
 </style>  
@@ -33,10 +34,12 @@
 <body>
   <div class="headerItembox">
     <div class="headerLeft">
-    <a class="navbar-brand" href="/">To-Do</a>
+    <a class="navbar-brand" href="/todolist/list">
+    
+    <span style="font-family: 'Glatic', sans-serif; font-weight: 700; font-size: 1.4rem;">To-Do</span></a>
     </div>
-    <div class="headerCenter" style="width:800px;outline:none;">
-      <div id="searchBar" style="width:800px;">
+    <div class="headerCenter" style="width:700px;outline:none;">
+      <div id="searchBar" style="width:700px;">
         <div id="firstLine" class="search-bar" style="position:relative; width:100%; max-width:800px;">
           <input
             type="text"
@@ -78,8 +81,8 @@
             <li class="headerLi"><a href="/user/login" class="navbar-brand">로그인</a></li>
           </c:when>
           <c:otherwise>
-            <li class="headerLi"><a href="/user/mypage" class="navbar-brand">${authUser.userid}님</a></li>
-            <li class="headerLi"><a href="/user/logout" class="navbar-brand">로그아웃</a></li>
+            <li class="headerLi" style="padding: 0 10px"><a href="/user/mypage" class="navbar-brand">${authUser.userid}님 MyPage</a></li>
+            <li class="headerLi" style="padding: 0 10px"><a href="/user/logout" class="navbar-brand"><i class="fa-solid fa-right-from-bracket"style="padding: 0 10px"></i>로그아웃</a></li>
           </c:otherwise>
         </c:choose>
       </ul>

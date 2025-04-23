@@ -45,7 +45,7 @@ public class TodolistController {
       selectDTO.setWriter(authUser.getUserid());
       selectDTO.setOrderby("duedate");
       selectDTO.setOrdermethod("asc");
-      log.info("●●● selectDTO : {}", selectDTO);
+      log.info("●LIST●● selectDTO : {}", selectDTO);
       List<TodoDTO> list = todolistService.selectMulti(selectDTO);
       model.addAttribute("todoAllList", list);
       

@@ -17,6 +17,9 @@
   <select id="selectIdIsDuplicate" resultType="int">
     select count(*) from kjw_user where userid = #{userid}
   </select>
+  <select id="uniqueEmailCheck" resultType="int">
+    select count(*) from kjw_user where useremail = #{userInputEmail}
+  </select>
   <select id="selectEmail" resultType="string">
     select useremail from kjw_user where userid = #{userid}
   </select>
@@ -26,6 +29,17 @@
   </select>
   
   <update id="updateInfo">
-    update kjw_user set userpwd = sha1(md5(#{userpwd})), username = #{username}, useraddr = #{useraddr} where userid = #{userid}
+    update kjw_user
+    <set>
+      <choose>
+        <when test="userpwd == ''">
+        username = #{username}, useraddr = #{useraddr}
+        </when>
+        <otherwise>
+        userpwd = sha1(md5(#{userpwd})), username = #{username}, useraddr = #{useraddr}
+        </otherwise >
+      </choose>
+    </set>
+    where userid = #{userid}
   </update>
 </mapper> 

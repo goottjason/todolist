@@ -68,7 +68,7 @@ public class SendEmailService {
 
   private void getAccount() throws FileNotFoundException, IOException {
     Properties account = new Properties();
-    account.load(new FileReader("C:\\lecture\\spring\\todolist\\src\\main\\webapp\\WEB-INF\\config.properties"));
+    account.load(new FileReader("C:\\lectures\\todolist\\src\\main\\webapp\\WEB-INF\\config.properties"));
     this.username = (String) account.get("username");
     this.password = (String) account.get("password");
     

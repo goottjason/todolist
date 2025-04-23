@@ -13,6 +13,8 @@
 
 <script>
 let isPwdModCheck = false;
+let isNameCheck = false;
+let isAddrCheck = false;
 $(function() {
 
 	// 비밀번호 체크 이벤트
@@ -103,10 +105,11 @@ function existingpwdBtnClick() {
 }
 
 function mainpageIsValid() {
-  alert("!");
 	let result = false;
 	let pwd1Check = null;
   let pwd2Check = null;
+  let nameCheck = null;
+  let addrCheck = null;
 	if (isPwdModCheck) {
 	  pwd1Check = $("#mypagePwd1Valid").val();
 	  pwd2Check = $("#mypagePwd2Valid").val();	  
@@ -114,8 +117,16 @@ function mainpageIsValid() {
 	  pwd1Check = "checked";
 	  pwd2Check = "checked";
 	}
-  let nameCheck = $("#mypageNameValid").val();
-	let addrCheck = $("#mypageAddrValid").val();
+	if (isNameCheck) {
+    nameCheck = $("#mypageNameValid").val();		
+	} else {
+		nameCheck = "checked";
+	}
+	if (isAddrCheck) {
+		addrCheck = $("#mypageAddrValid").val();
+		} else {
+			addrCheck = "checked";
+		}
 	console.log(pwd1Check, pwd2Check, nameCheck, addrCheck);
   if (pwd1Check == "checked" && pwd2Check == "checked"
 		  && nameCheck == "checked" && addrCheck == "checked") {
@@ -138,6 +149,7 @@ function mainpageIsValid() {
     <h1 style="font-size:1.7rem; font-weight:700; color:#0f1d41; margin-bottom:32px; text-align:center; letter-spacing:-1px;">
       ${authUser.username} 님의 회원 정보
     </h1>
+    <div style="text-align:center;color:#AF987E">저장 후에는 재로그인이 필요합니다.</div>
     <div class="container mt-3" style="padding:0;">
       <form action="updateinfo" method="POST">
         <table class="table table-hover" style="width:100%; border-collapse:separate; border-spacing:0 14px;">
@@ -191,7 +203,7 @@ function mainpageIsValid() {
         <div style="display:flex; gap:10px; margin-top:28px;">
           <button type="submit" class="btn btn-success" onclick="return mainpageIsValid();"
             style="flex:1; background:#0f1d41; color:#fff; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">저장</button>
-          <button type="submit" class="btn btn-danger"
+          <button type="reset" class="btn btn-danger"
             style="flex:1; background:#e0e4ea; color:#0f1d41; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">취소</button>
         </div>
       </form>

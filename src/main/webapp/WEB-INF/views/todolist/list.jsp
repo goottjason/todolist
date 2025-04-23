@@ -74,9 +74,16 @@
   	
 	  // -------- 데이트피커 생성 관련
     let picker = new easepick.create({
-	    element: "#regDateInput",
-	    css: ["https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css"],
-	    zIndex: 10
+      element: "#regDateInput",
+      css: ["https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.css"],
+      zIndex: 10,
+      setup(picker) {
+	    picker.on('select', (e) => {
+	    	let selectedDate = picker.getDate().format('YYYY-MM-DD');
+	      $('#dateViewSpan').html(`\${selectedDate}에 할일이 추가됩니다`);
+	      $('#dateViewSpan').show();
+	    });
+	  },
     });
 	  
 	  
@@ -102,18 +109,17 @@
 
     // 정렬아이콘 클릭시 (오름차순, 내림차순)
     $("body").on("click", "#orderMethodSelect", function() {
-      let status = true;
-      status = $(this).hasClass("fa-arrow-up-wide-short"); // 오름차순 상태
-      $(this).toggleClass("fa-arrow-up-wide-short");
-      $(this).toggleClass("fa-arrow-down-wide-short");
-      if(status) {
+    	// 오름차순이면 true
+    	let isAsc = $(this).hasClass("fa-arrow-up-wide-short"); 
+    	$(this).toggleClass("fa-arrow-up-wide-short fa-arrow-down-wide-short");
+    	
+      if(isAsc) {
         // 클릭해서 내림차순 상태로 변경
         sessionStorage.setItem("ordermethod", "desc");
-        doList();
       } else {
         sessionStorage.setItem("ordermethod", "asc");
-        doList();
       }
+      doList();
     });
     
     // 정렬방식 선택 변경시 (마감일순, 등록일순, 제목순)
@@ -122,30 +128,6 @@
       doList();
     });    
     	
-    // -------- 리마인더아이콘 클릭시 --------
-    $(document).on('click', '#reminderBtn', function(e) {
-      e.stopPropagation();
-      var btnOffset = $(this).offset();
-      var btnHeight = $(this).outerHeight();
-      $('#reminderModal').show();
-      $('#reminderModal .modal-content').css({
-        left: btnOffset.left + 'px',
-        top: (btnOffset.top + btnHeight) + 'px'
-      });
-    });
-    // -------- X버튼 클릭시 --------
-    $(document).on('click', '.close', function(e) {
-      e.stopPropagation();
-      $('#reminderModal').hide();
-    });
-    // -------- 모달 내부 클릭시 --------
-    $(document).on('click', '#reminderModal .modal-content', function(e) {
-      e.stopPropagation();
-    });
-    // -------- 모달 외부 클릭시 --------
-    $(document).on('click', function() {
-      $('#reminderModal').hide();
-    });
 
     
     
@@ -161,8 +143,9 @@
     });
 
     // -------- 할일추가에서 캘린더아이콘 클릭시
-    $(document).on('click', '#regDuedate', function() {
-      $("#regDateInput").click();
+    $(document).on("click", "#regDuedate", function() {
+//     	alert("!");
+    	$("#regDateInput").focus();
     });
     
     // -------- 중요도 아이콘이 눌렸을 때 --------
@@ -182,9 +165,10 @@
     // ===============================
 
     // 전체 선택 체크박스 클릭 시
-    $('#selectAllCheckbox').on('change', function() {
+    $(document).on('change','#selectAllCheckbox', function() {
+    	
       $('.rowCheckbox').prop('checked', this.checked);
-    });
+    })
 
     // 각 행 체크박스 클릭 시
     $(document).on('change', '.rowCheckbox', function() {
@@ -439,7 +423,7 @@
 	// -------- |initialList()|
 	// session 저장 후 페이지 로딩 함수
 	function initialList() {
-		sessionStorage.setItem("ordermethod", "desc");
+		sessionStorage.setItem("ordermethod", "asc");
     sessionStorage.setItem("orderby", "duedate");
     sessionStorage.setItem("status", "allList");
     doList();
@@ -732,49 +716,6 @@
 
 <body>
 
-	<!-- 리마인더 모달 -->
-	<div id="reminderModal" class="modal">
-		<div class="modal-content">
-			<span class="close">&times;</span>
-			<h2>리마인더 설정...... [토글]</h2>
-
-			<table>
-				<tr>
-
-					<td>
-						<form>
-							<select name="language">
-								<option value="none">=== 선택 ===</option>
-								<option value="korean" selected>1일 내</option>
-								<option value="english">2일 내</option>
-								<option value="chinese">1주 내</option>
-								<option value="spanish">1개월 내</option>
-								<option value="spanish">3개월 내</option>
-							</select>
-						</form>
-					</td>
-					<td>마감예정 미리알림</td>
-				</tr>
-			</table>
-			<table>
-				<tr>
-					<td>
-						<form>
-							<select name="language">
-								<option value="none">=== 선택 ===</option>
-								<option value="korean" selected>매일</option>
-								<option value="english">매주 일요일</option>
-								<option value="chinese">매달 1일</option>
-							</select>
-						</form>
-					</td>
-					<td><input type="datetime"></td>
-					<td>에 이메일로 알림설정</td>
-				</tr>
-			</table>
-			<div>[v] 중요한 할일만 알림 받기!</div>
-		</div>
-	</div>
 
 	<!-- 헤더 영역 -->
 	<jsp:include page="../header.jsp"></jsp:include>
@@ -876,22 +817,18 @@
 					<label
 						style="font-size: 15px; color: #888; display: flex; align-items: center; gap: 2px; cursor: pointer;">
 						<button
-							style="background: #d1d1d1; color: #fff; border: none; border-radius: 6px; padding: 2px 10px; font-size: 15px; font-family: inherit; cursor: pointer; margin-right: 6px;">
+							style="background: #b1b1b1; color: #fff; border: none; border-radius: 6px; padding: 2px 10px; font-size: 15px; font-family: inherit; cursor: pointer; margin-right: 6px;">
 							<i id="orderMethodSelect" class="fa-solid fa-arrow-up-wide-short"></i>
 							<!--<i class="fa-solid fa-arrow-down-wide-short"></i> -->
 						</button>
-					</label> <select id="orderbySelect" name="orderbySelect"
-						style="font-size: 12px; padding: 3px 8px; border: 1px solid #b7c1c7; border-radius: 5px; background: #fff; color: #222; outline: none; cursor: pointer; margin-right: 33px">
+					</label> 
+          <select id="orderbySelect" name="orderbySelect"
+						style="width: 130px;font-size: 12px; padding: 3px 8px; border: 1px solid #b7c1c7; border-radius: 5px; background: #fff; color: #222; outline: none; cursor: pointer;">
 						<option value="duedate">마감일순</option>
 						<option value="dno">등록일순</option>
 						<option value="title">제목순</option>
-					</select> <label
-						style="font-size: 15px; color: #888; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-						<button id="reminderBtn"
-							style="background: #ebc023; color: #fff; border: none; border-radius: 6px; padding: 2px 10px; font-size: 15px; font-family: inherit; cursor: pointer; margin-right: 1px;">
-							<i class="fa-solid fa-bell"></i>
-						</button>
-					</label>
+					</select>
+
 				</div>
 			</div>
 
@@ -917,17 +854,19 @@
 			<!-- 할일 추가 바 -->
 			<div class="todo-box">
 				<div class="todo-input-row">
-					<input class="regTitleInput" type="text" placeholder="할일 추가" />
+					<input class="regTitleInput" type="text" placeholder="이곳에 할일을 추가해보세요" />
 				</div>
 				<div class="todo-footer">
 					<div class="todo-icons">
 
 						<!-- 날짜 설정 -->
-						<span class="icon"> <i id="regDuedate"
-							class="fa-solid fa-calendar-days" style="color: #1e3050"></i> 
-							<input type="date" id="regDateInput" style="display:none">
-						</span>
 
+            <span class="icon">
+              <input type="date" id="regDateInput" style="opacity:0; width:1px; height:1px; position:absolute; left:100; top:100;">
+              <label for="regDateInput">
+                <i id="regDuedate" class="fa-solid fa-calendar-days" style="color: #1e3050; cursor:pointer;pointer-events: auto;"></i>
+                </label>
+            </span>
 						<!-- 중요도 설정 -->
 						<span> <i class="fa-regular fa-star regStarInput"
 							style="color: #1e3050"></i>
@@ -937,26 +876,24 @@
 							class="fa-regular fa-circle-down"
 							style="color: #1e3050; cursor: pointer"></i>
 						</span>
+            <span id=dateViewSpan style="display:none;color:#757575"></span>
 					</div>
 					<button class="add-btn" onclick="register();">추가</button>
 				</div>
-				<div id="lm-toggle" class="todo-footer" style="display: none;">
-					<div class="todo-icons">
-						<!-- 위치 인풋 텍스트 -->
-						<span class="" style="padding: 5px 10px 5px 0px">위치</span>
-						<!--             <i id="regDuedate" -->
-						<!--               class="fa-solid fa-calendar-days" style="color: #1e3050"></i> -->
-						<span style="padding: 5px 10px 5px 0px"><input type="text"
-							id="addLocationInput" class=""></span>
-
-						<!-- 메모 인풋 텍스트 -->
-						<span class="" style="padding: 5px 10px 5px 0px">메모</span>
-						<!--             <i id="regDuedate" -->
-						<!--               class="fa-solid fa-calendar-days" style="color: #1e3050"></i> -->
-						<span style=""padding:5px 10px 5px 0px"><input type="text"
-							id="addMemoInput" class=""></span>
-					</div>
-				</div>
+        <div id="lm-toggle" class="todo-footer" style="display: none;">
+          <div class="todo-icons" style="display: flex; align-items: center; gap: 32px;">
+            <!-- 위치 -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="padding-right: 4px;">위치</span>
+              <input type="text" id="addLocationInput" style="width: 140px;">
+            </div>
+            <!-- 메모 -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="padding-right: 4px;">메모</span>
+              <input type="text" id="addMemoInput" style="width: 200px;">
+            </div>
+          </div>
+        </div>
 			</div>
 
 

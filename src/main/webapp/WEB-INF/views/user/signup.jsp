@@ -12,7 +12,7 @@
 
 $(function() {
   // 비밀번호 체크 이벤트
-  $("#userpwd1").on("blur", function () {
+  $(document).on("blur", "#userpwd1", function () {
     // 비밀번호 4~8자
     let tmpPwd = $("#userpwd1").val();
     if (tmpPwd.length < 8 || tmpPwd.length > 20) {
@@ -36,7 +36,7 @@ $(function() {
       }
     }
   });  
-  $("#userpwd2").on("blur", function() {
+  $(document).on("blur", "#userpwd2", function () {
     let tmpPwd1 = $("#userpwd1").val();
     let tmpPwd2 = $("#userpwd2").val();
     if (tmpPwd1.length < 8 || tmpPwd1.length > 20) {
@@ -54,13 +54,13 @@ $(function() {
   });
   
   // 빈칸으로 블러했을 때에만, outputError(red)
-  $("#useremail").on("blur", function() {
+  $(document).on("blur", "#useremail", function () {
     if($("#useremail").val().length == 0) {
       outputError("이메일은 필수항목입니다.", $("#useremail"), "red");
     }
   });
   // 이메일을 입력하는 동안 주소 유효성 검증
-  $("#useremail").on("keyup", function() {
+  $(document).on("keyup", "#useremail", function () {
     let usermail = $("#useremail").val();
     console.log(useremail);
     if($("#useremail").val().length > 0) {
@@ -72,38 +72,16 @@ $(function() {
       } else {
         outputError("올바른 이메일 형식입니다.", $("#useremail"), "green");
         // 유효성 검증 완료되면, 인증하기 버튼 활성화
-        $("#emailAuthBtn").attr("disabled", false);        
+        $("#emailAuthBtn").show();        
       }
     }
   });
   // 인증코드를 입력하면, 보내진인증코드와 일치여부 확인
-  $("#authCodeInput").on("keyup", function() {
-	  console.log("keyup 먹히니?")
-	  let userAuthCode = $("#authCodeInput").val();
-	  $.ajax({
-	    url: "/user/checkAuthCode", // 데이터가 송수신될 서버의 주소
-	    type: "POST", // 통신 방식 (GET, POST, PUT, DELETE)
-	    data: { "userAuthCode": userAuthCode },
-	    dataType: "text", 
-	    success: function (data) {
-	      console.log(data); // 데이터가 넘어오면 콘솔에 확인
-	      if (data == "success") {
-	        outputError("인증완료", $("#useremail"), "blue");
-	        // 이메일인풋, 인증인풋, 인증하기 비활성화
-	        $(".authDiv").remove();
-	        $("#emailAuthBtn").attr("disabled", true);
-	        $("#emailValid").val("checked");        
-	      } else {
-	        outputError("인증번호가 일치하지 않습니다. 다시 입력해주세요.", $("#useremail"), "red");
-	      }
-	      
-	    },
-	    error: function () {},
-	    complete: function () {},
-	  });
+  $(document).on("keyup", "#authCodeInput", function () {
+	  
   });
   
-  $("#username").on("blur", function() {
+  $(document).on("blur", "#username", function () {
       console.log($("#username").val());
       if($("#username").val().length > 0) { // 
         outputError("사용가능", $("#username"), "green");
@@ -119,24 +97,66 @@ $(function() {
 
 // ▶▶▶▶▶ 이메일 관련 함수
 
+function uniqueEmailCheck() {
+	let userInputEmail = $("#useremail").val();
+	  $.ajax({
+	    url: "/user/uniqueEmailCheck", // 데이터가 송수신될 서버의 주소
+	    type: "POST", // 통신 방식 (GET, POST, PUT, DELETE)
+	    data: { "userInputEmail": userInputEmail },
+	    dataType: "text", 
+	    async: false,
+	    success: function (data) {
+	      console.log(data); // 데이터가 넘어오면 콘솔에 확인
+	      if (data == 1) {
+	    	  alert("중복된 이메일이 존재합니다. 다른 이메일을 입력해주세요.");
+      
+	      } else {
+	    	  callSendEmail();
+	      }
+	      
+	    },
+	    error: function () {},
+	    complete: function () {},
+	  });
+}
+
 // "인증하기" 버튼 클릭시 작동
 function emailAuth() {
+	uniqueEmailCheck();
+	alert("결과", result);
   // 이메일 보내는 요청
-  callSendEmail();
+  if (result == "success") {
+	  alert("중복체크 성공");
+	  
+  }
   // keyup이벤트로 인증번호 일치시 인증을 완료했어요 & 인증번호 및 이메일창 비활성화
 }
 
-// 인증번호 입력창 생성함수
-function showAuthDiv() {
-  let authDiv = `
-    <div class="authDiv mt-2">
-      <input type="text" class="form-control" id="authCodeInput" placeholder="인증번호를 입력하세요." />
-      <div class="d-flex align-items-center">
-        <span class="timer">3:00</span>
-      </div>
-    </div>
-  `;
-  $(authDiv).insertAfter("#useremail");
+function emailInput() {
+	console.log("keyup 먹히니?")
+	  let userAuthCode = $("#authCodeInput").val();
+	  $.ajax({
+	    url: "/user/checkAuthCode", // 데이터가 송수신될 서버의 주소
+	    type: "POST", // 통신 방식 (GET, POST, PUT, DELETE)
+	    data: { "userAuthCode": userAuthCode },
+	    dataType: "text", 
+	    success: function (data) {
+	      console.log(data); // 데이터가 넘어오면 콘솔에 확인
+	      if (data == "success") {
+	        outputError("인증완료", $("#useremail"), "blue");
+	        // 이메일인풋, 인증인풋, 인증하기 비활성화
+//	        $(".authDiv").remove();
+	        $(".authDiv").hide(); 
+	        $("#emailInputBtn").hide();
+	        $("#emailValid").val("checked");        
+	      } else {
+	        outputError("인증번호가 일치하지 않습니다. 다시 입력해주세요.", $("#useremail"), "red");
+	      }
+	      
+	    },
+	    error: function () {},
+	    complete: function () {},
+	  });
 }
 
 function callSendEmail() {
@@ -150,6 +170,8 @@ function callSendEmail() {
       if (data == "success") {
     	  $(".authDiv").show();
         startTimer(); // 타이머 동작을 호출
+        $("#emailAuthBtn").hide();
+        $("#emailInputBtn").show();
       }
     },
     error: function () {},
@@ -164,7 +186,7 @@ function startTimer() {
   // 3분(180초)부터 줄어가야 함
   // setInterval 
   clearTimer();
-  timeLeft = 10;
+  timeLeft = 30;
   updateDisplay(timeLeft);
   intervalId = setInterval(function() {
     timeLeft--;
@@ -180,7 +202,7 @@ function startTimer() {
 
 function expiredTimer() {
   // 인증버튼 비활성화
-  $("#authBtn").prop("disabled", true);
+  $("#authBtn").hide();
   
   // 타이머 종료시, 백엔드에도 인증시간이 만료되었음을 알려야 한다.
   if($("#emailValid").val() != "checked") {
@@ -190,9 +212,11 @@ function expiredTimer() {
       dataType: "text", // 수신받을 데이터 타입 (MIME TYPE) (text, json, xml)
       success: function (data) {
         console.log(data); // 데이터가 넘어오면 콘솔에 확인
-        alert("인증시간이 만료되었습니다. 재인증해주세요");
-        $(".authDiv").remove();
-        $("#emailAuthBtn").attr("disabled", false);  
+        alert("인증시간이 만료. 인증메일을 다시 보냈으니, 확인해주세요.");
+				callSendEmail();
+				outputError("", $("#useremail"), "blue");
+				startTimer();
+//         $("#emailAuthBtn").show();  
       },
       error: function () {},
       complete: function () {},
@@ -329,7 +353,8 @@ function isValid() {
   <jsp:include page="../header.jsp"></jsp:include>
   <div class="container mt-5">
     <div class="row">
-      <h1>회 원 가 입</h1>
+      <div>${signupStatus}</div>
+      <h3>회원가입</h3>
       <form action="signup" method="POST">
         <div class="mb-3 mt-3">
           <label for="userid">아이디 :&nbsp;&nbsp;</label><span></span>
@@ -356,7 +381,9 @@ function isValid() {
 			        <span class="timer">3:00</span>
 			      </div>
 			    </div>
-          <button type="button" class="btn btn-success" onclick="emailAuth();" id="emailAuthBtn" disabled>인증하기</button>
+          <button type="button" class="btn btn-success" onclick="emailAuth();" id="emailAuthBtn" style="display:none;">인증하기</button>
+          <button type="button" class="btn btn-success" onclick="emailInput();" id="emailInputBtn" style="display:none;">입력완료</button>
+          
           <input type="hidden" id="emailValid" />
         </div> 
         <div class="mb-3 mt-3">

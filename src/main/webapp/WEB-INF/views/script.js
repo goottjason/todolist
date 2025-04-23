@@ -57,7 +57,7 @@ function validCheckPwd1 (pwd1, pwd2) {
     return "fail";
   } else {
     if(pwd2 == "") {
-      outputMsg("아래에 다시 한번 입력해주세요.", $("#newPwd1MsgArea"), "yellow");
+      outputMsg("아래에 다시 한번 입력해주세요.", $("#newPwd1MsgArea"), "orange");
       return "success";
     } else {
       if(pwd1 != pwd2) {

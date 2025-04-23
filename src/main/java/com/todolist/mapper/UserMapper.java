@@ -11,4 +11,5 @@ public interface UserMapper {
   String selectEmail(@Param("userid") String userid);
   int selectExistingPwdCheck(@Param("userid") String userid, @Param("userpwd") String userpwd);
   void updateInfo(UserDTO user);
+  int uniqueEmailCheck(String userInputEmail);
 }
