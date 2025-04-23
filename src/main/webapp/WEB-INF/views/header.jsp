@@ -33,7 +33,7 @@
 <body>
   <div class="headerItembox">
     <div class="headerLeft">
-    <a class="navbar-brand" href="/">To do</a>
+    <a class="navbar-brand" href="/">To-Do</a>
     </div>
     <div class="headerCenter" style="width:800px;outline:none;">
       <div id="searchBar" style="width:800px;">

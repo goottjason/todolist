@@ -1,22 +1,20 @@
 package com.todolist.domain;
 
-import lombok.Getter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-
 @NoArgsConstructor
 @AllArgsConstructor
-//@RequiredArgsConstructor
 @Getter
 @Setter
 @Builder
 @ToString
-public class TodoDTO {
+public class SendInsertDTO {
   private int dno;
   private String writer;
   private String title;
@@ -25,25 +23,19 @@ public class TodoDTO {
   private int star;
   private String memo;
   private String location;
-  
-//  TodoDTO() {
-////    SetDefaultValues();
-//  }
 
-  private void SetDefaultValues() {
-    if(title.equals("")) {     
-      this.title = "내용 없음";
-    }
-    if(duedate.equals("")) {     
-      this.duedate = null;
-    }
-    if(memo.equals("")) {     
-      this.memo = null;
-    }
-    if(location.equals("")) {     
-      this.location = null;
-    }
+public void setDefaultValues() {
+  if(title != null && title.equals("")) {     
+    this.title = "내용 없음";
   }
-  
-  
+  if(duedate != null && duedate.equals("")) {     
+    this.duedate = null;
+  }
+  if(memo != null && memo.equals("")) {     
+    this.memo = null;
+  }
+  if(location != null && location.equals("")) {     
+    this.location = null;
+  }
+}  
 }

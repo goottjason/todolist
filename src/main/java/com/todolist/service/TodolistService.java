@@ -6,6 +6,7 @@ import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SelectedAllDTO;
+import com.todolist.domain.SendInsertDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 
@@ -14,7 +15,7 @@ public interface TodolistService {
   List<TodoDTO> selectMulti(SelectDTO selectDTO);
   
   
-  int register(TodoDTO todoDTO);
+  int insertTodo(SendInsertDTO sendInsertDTO);
 
   List<TodoDTO> viewAll(String userid);
   
@@ -50,7 +51,10 @@ public interface TodolistService {
   List<TodoDTO> listDuedate(String writer);
 
 
-  void updateSeletedAll(SelectedAllDTO selectedAllDTO);
+  void updateSelectedAll(SelectedAllDTO selectedAllDTO);
+
+
+  void deleteSelectedAll(SelectedAllDTO selectedAllDTO);
 
 
 

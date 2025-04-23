@@ -73,7 +73,10 @@
           onmouseover="this.style.background='#E1E1E1';" 
               onmouseout="this.style.background='#fff';">
           <span id="dduedatebtn-${todo.dno}" class="duedateSpan" 
-                  data-dno="${todo.dno}" value="${todo.duedate}">${todo.duedate}</span>
+                  data-dno="${todo.dno}" value="${todo.duedate}"
+                  style="color: ${todo.duedate < '2025-04-23' ? '#ec407a': todo.duedate == '2025-04-23' ? '#0f1d41' : '#1976d2'}">
+                  ${todo.duedate}
+                  </span>
             <input type="date" class="edit-input-duedate" data-dno="${todo.dno}"
                    style="display:none; border:none; background:transparent; width:100%;" />
 

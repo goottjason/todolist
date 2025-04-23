@@ -104,6 +104,11 @@ public class UserController {
     log.info("회원정보 수정 : {}", user);
     String result = "";
     userService.updateInfo(user);
+    
+    authUser = userService.login(user.getUserid(), user.getUserpwd());
+ 
+    session.setAttribute("authUser", authUser);
+    
     return "redirect:/user/mypage";
   }
   

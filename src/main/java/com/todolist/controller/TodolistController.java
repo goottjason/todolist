@@ -1,9 +1,6 @@
 package com.todolist.controller;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -21,6 +18,7 @@ import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SelectedAllDTO;
+import com.todolist.domain.SendInsertDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.domain.UserDTO;
@@ -55,9 +53,80 @@ public class TodolistController {
     }
   }
   
+  // @RequestParam: GET, 폼 전송, 간단한 값 전달
+  // @RequestBody: 요청 body → 자바 객체로 변환 / 요청 데이터 받기/ REST API, AJAX, JSON 데이터 등
+  // @ResponseBody: 자바 객체 → 응답 body로 변환 / 데이터 응답 보내기
+  @PostMapping("/updateSelectedAll")
+  @ResponseBody
+  public String updateSelectedAll(@RequestBody SelectedAllDTO selectedAllDTO,HttpSession session) {
+    log.info("■■■■■ DTO : {}", selectedAllDTO);
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "redirect:/user/login";
+    } else {
+      selectedAllDTO.setWriter(authUser.getUserid());
+      // 수정할 데이터가 없는 경우
+      if (selectedAllDTO.isEmptyUpdateData()) {
+        return "fail";
+      }
+      try {
+        todolistService.updateSelectedAll(selectedAllDTO);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return "fail";
+      }
+      return "success";
+    }
+  }  
   
-  //아이디어정보기술
-  //타이드플로?
+  @PostMapping("/deleteSelectedAll")
+  @ResponseBody
+  public String deleteSelectedAll(@RequestBody SelectedAllDTO selectedAllDTO,HttpSession session) {
+    log.info("■■■■■ DTO : {}", selectedAllDTO);
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if (authUser == null) {
+      return "redirect:/user/login";
+    } else {
+      if (selectedAllDTO.isEmptyDeleteData()) {
+        return "fail";
+      } else {
+        selectedAllDTO.setWriter(authUser.getUserid());
+        try {
+          todolistService.deleteSelectedAll(selectedAllDTO);
+        } catch (Exception e) {
+          e.printStackTrace();
+          return "fail";
+        }
+        return "success";
+      }
+    }
+    
+  }  
+
+  
+  @PostMapping("/insertTodo") 
+  @ResponseBody
+  public String insertTodo(@RequestBody SendInsertDTO sendInsertDTO, RedirectAttributes rttr, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if(authUser == null) {
+      return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
+    } else {
+      sendInsertDTO.setWriter(authUser.getUserid());
+      sendInsertDTO.setDefaultValues();
+      
+      log.info("■■■■■ sendInsertDTO : {}", sendInsertDTO);
+      // dno=0, writer=goottjason, title=내용 없음, duedate=null, 
+      // finished=0, star=0, memo=null, location=null
+      if(todolistService.insertTodo(sendInsertDTO) == 1) {
+        return "success";  
+      } else {
+        return "fail";
+      }
+    }
+  }  
+  
+  
+
 
   @PostMapping("/selectMulti")
   public String selectMulti(SelectDTO selectDTO, HttpSession session, Model model) {
@@ -65,47 +134,25 @@ public class TodolistController {
     
     if (authUser == null) {
       return "/user/login";
-    }
-    
-    selectDTO.setWriter(authUser.getUserid());
-    
-    log.info("●●● selectDTO : {}", selectDTO);
-    
-    List<TodoDTO> list = todolistService.selectMulti(selectDTO);
-  
-    model.addAttribute("todoAllList", list);
-  
-    return "/todolist/onlylist";
-  }
-  
-  
-  
-  
-  
-  
-  
-  
-  @PostMapping("/register") 
-  @ResponseBody
-  public String register(TodoDTO todoDTO, RedirectAttributes rttr, HttpSession session) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if(authUser == null) {
-      return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
     } else {
-      if(todoDTO.getDuedate().equals("")) {     
-        todoDTO.setDuedate(null);
-      }
-      todoDTO.setWriter(authUser.getUserid());
-      log.info("◆◆◆◆◆register Todo{}", todoDTO);
+      selectDTO.setWriter(authUser.getUserid());
+      log.info("●●● selectDTO : {}", selectDTO);
+      List<TodoDTO> list = todolistService.selectMulti(selectDTO);        
+      model.addAttribute("todoAllList", list);
       
-      if(todolistService.register(todoDTO) == 1) {
-        rttr.addFlashAttribute("status", "success");   
-      } else {
-        return "fail";
-      }
+      return "/todolist/onlylist";
     }
-    return "success";
+    
   }
+  
+  
+  
+  
+  
+  
+  
+  
+
   
   
   
@@ -190,29 +237,7 @@ public class TodolistController {
     return "success";
   }
   
-  // @RequestParam: GET, 폼 전송, 간단한 값 전달
-  // @RequestBody: 요청 body → 자바 객체로 변환 / 요청 데이터 받기/ REST API, AJAX, JSON 데이터 등
-  // @ResponseBody: 자바 객체 → 응답 body로 변환 / 데이터 응답 보내기
-  @PostMapping("/updateSeletedAll")
-  @ResponseBody
-  public String updateSeletedAll(@RequestBody SelectedAllDTO selectedAllDTO,HttpSession session) {
-    log.info("**************{}", selectedAllDTO);
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if (authUser == null) {
-      return "redirect:/user/login";
-    }
-    // 수정할 데이터가 없는 경우
-    if (selectedAllDTO.isEmptyUpdateData()) {
-      return "fail";
-    }
-    try {
-      todolistService.updateSeletedAll(selectedAllDTO);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return "fail";
-    }
-    return "success";
-  }
+
 
    
   

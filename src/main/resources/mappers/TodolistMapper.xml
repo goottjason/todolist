@@ -20,18 +20,18 @@
   <update id="updateTodo">
     update kjw_todolist set title = #{title}, duedate = #{duedate}, memo=#{memo}, location=#{location} where dno = #{dno}
   </update>
-  <update id="updateSeletedAll">
+  <update id="updateSelectedAll">
     update kjw_todolist
     <set>
       <choose>
-        <when  test="finished == '9'">
+        <when test="finished == 9">
         </when>
         <otherwise>
           finished = #{finished},
         </otherwise >
       </choose>
       <choose>
-        <when test="star == '9'">
+        <when test="star == 9">
         </when>
         <otherwise>
           star = #{star},
@@ -41,7 +41,8 @@
         duedate = #{duedate}
       </if>
     </set>
-    where dno in <foreach collection="selectedArr" item="i" separator="," open="(" close=")">#{i}</foreach>
+    where writer = #{writer} and dno in
+    <foreach collection="selectedArr" item="i" separator="," open="(" close=")">#{i}</foreach>
   </update>
   <!-- ■■■ DELETE ■■■ -->
   <delete id="deleteDetail">
@@ -50,10 +51,15 @@
   <delete id="deleteTodo">
     delete from kjw_todolist where dno = #{dno}
   </delete>
+  <delete id="deleteSelectedAll">
+    delete from kjw_todolist where writer = #{writer} and dno in
+    <foreach collection="selectedArr" item="i" separator="," open="(" close=")">#{i}</foreach>
+  </delete>
   
   <!-- ■■■ INSERT ■■■ -->
   <insert id="insertTodo">
-    insert into kjw_todolist (title, duedate, writer, finished, star) values(#{title}, #{duedate}, #{writer}, #{finished}, #{star})
+    insert into kjw_todolist (writer, title, duedate, finished, star, memo, location)
+      values(#{writer}, #{title}, #{duedate}, #{finished}, #{star}, #{memo}, #{location})
   </insert>
   
   <!-- ■■■ SELECT * ■■■ -->
@@ -61,13 +67,13 @@
   <select id="selectAllTodo" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist 
       where writer = #{userid}
-      order by #{orderby} #{ordermethod}
+      order by finished asc, ${orderby} ${ordermethod}
   </select>
   
   <select id="selectSearchTodo" resultType="com.todolist.domain.TodoDTO">
     select * from kjw_todolist
     <include refid="search"></include>
-    order by duedate
+    order by finished asc, duedate asc
   </select>
   
   <!-- 리마인더 관련 -->
@@ -79,18 +85,18 @@
     select * from kjw_todolist where dno = #{dno}
   </select>
   
-  <select id="selectwhere" resultType="com.todolist.domain.TodoDTO">
-    select * from kjw_todolist
-    <include refid="leftSidebarSelect"></include>
-    order by duedate
-  </select>
+<!--   <select id="selectwhere" resultType="com.todolist.domain.TodoDTO"> -->
+<!--     select * from kjw_todolist -->
+<!--     <include refid="leftSidebarSelect"></include> -->
+<!--     order by duedate -->
+<!--   </select> -->
   
-  <select id="selectSortBy" resultType="com.todolist.domain.TodoDTO">
-    select * from kjw_todolist where writer = #{writer}
-    <if test="sortBy == 'title'">order by title</if>
-    <if test="sortBy == 'duedate'">order by duedate</if>
-    <if test="sortBy == 'dno'">order by dno</if>
-  </select>
+<!--   <select id="selectSortBy" resultType="com.todolist.domain.TodoDTO"> -->
+<!--     select * from kjw_todolist where writer = #{writer} -->
+<!--     <if test="sortBy == 'title'">order by title</if> -->
+<!--     <if test="sortBy == 'duedate'">order by duedate</if> -->
+<!--     <if test="sortBy == 'dno'">order by dno</if> -->
+<!--   </select> -->
   
 
 
@@ -121,6 +127,7 @@
       <if test="writer != null and writer != ''">
         writer = #{writer}
       </if>
+      
       <if test="dno != null and dno != ''">
         <trim prefix="AND">
         dno = #{dno}
@@ -193,7 +200,7 @@
       </if>
       <if test="searchTypes != null and searchTypes != '' and searchTypes == 'duedate'">
         <trim prefix="AND">
-        searchWord = #{searchWord}
+        duedate = #{duedate}
         </trim>
       </if>
     </where>

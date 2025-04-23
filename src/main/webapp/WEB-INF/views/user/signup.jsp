@@ -164,7 +164,7 @@ function startTimer() {
   // 3분(180초)부터 줄어가야 함
   // setInterval 
   clearTimer();
-  timeLeft = 180;
+  timeLeft = 10;
   updateDisplay(timeLeft);
   intervalId = setInterval(function() {
     timeLeft--;
@@ -185,14 +185,14 @@ function expiredTimer() {
   // 타이머 종료시, 백엔드에도 인증시간이 만료되었음을 알려야 한다.
   if($("#emailValid").val() != "checked") {
     $.ajax({
-      url: "/member/clearAuthCode", // 데이터가 송수신될 서버의 주소
+      url: "/user/clearAuthCode", // 데이터가 송수신될 서버의 주소
       type: "POST", // 통신 방식 (GET, POST, PUT, DELETE)
       dataType: "text", // 수신받을 데이터 타입 (MIME TYPE) (text, json, xml)
       success: function (data) {
         console.log(data); // 데이터가 넘어오면 콘솔에 확인
         alert("인증시간이 만료되었습니다. 재인증해주세요");
         $(".authDiv").remove();
-        $("#useremail").val("").focus();
+        $("#emailAuthBtn").attr("disabled", false);  
       },
       error: function () {},
       complete: function () {},

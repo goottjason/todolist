@@ -12,6 +12,7 @@
 <title>내 정보 수정</title>
 
 <script>
+let isPwdModCheck = false;
 $(function() {
 
 	// 비밀번호 체크 이벤트
@@ -70,6 +71,7 @@ $(function() {
 // 비밀번호변경버튼 클릭시 발생 이벤트
 function pwdmodBtnClick() {
 	console.log("접근");
+	isPwdModCheck = true;
 	$("#pwdmod").show();
 }
 
@@ -101,9 +103,17 @@ function existingpwdBtnClick() {
 }
 
 function mainpageIsValid() {
+  alert("!");
 	let result = false;
-  let pwd1Check = $("#mypagePwd1Valid").val();
-  let pwd2Check = $("#mypagePwd2Valid").val();
+	let pwd1Check = null;
+  let pwd2Check = null;
+	if (isPwdModCheck) {
+	  pwd1Check = $("#mypagePwd1Valid").val();
+	  pwd2Check = $("#mypagePwd2Valid").val();	  
+	} else {
+	  pwd1Check = "checked";
+	  pwd2Check = "checked";
+	}
   let nameCheck = $("#mypageNameValid").val();
 	let addrCheck = $("#mypageAddrValid").val();
 	console.log(pwd1Check, pwd2Check, nameCheck, addrCheck);

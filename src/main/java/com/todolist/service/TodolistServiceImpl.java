@@ -8,6 +8,7 @@ import com.todolist.domain.CountDTO;
 import com.todolist.domain.SearchDTO;
 import com.todolist.domain.SelectDTO;
 import com.todolist.domain.SelectedAllDTO;
+import com.todolist.domain.SendInsertDTO;
 import com.todolist.domain.SortDTO;
 import com.todolist.domain.TodoDTO;
 import com.todolist.mapper.TodolistMapper;
@@ -22,8 +23,8 @@ public class TodolistServiceImpl implements TodolistService {
   private final TodolistMapper todolistMapper;
   
   @Override
-  public int register(TodoDTO todoDTO) {
-    return todolistMapper.insertTodo(todoDTO);
+  public int insertTodo(SendInsertDTO sendInsertDTO) {
+    return todolistMapper.insertTodo(sendInsertDTO);
   }
 
   @Override
@@ -113,8 +114,14 @@ public class TodolistServiceImpl implements TodolistService {
   }
 
   @Override
-  public void updateSeletedAll(SelectedAllDTO selectedAllDTO) {
-    todolistMapper.updateSeletedAll(selectedAllDTO);
+  public void updateSelectedAll(SelectedAllDTO selectedAllDTO) {
+    todolistMapper.updateSelectedAll(selectedAllDTO);
+    
+  }
+
+  @Override
+  public void deleteSelectedAll(SelectedAllDTO selectedAllDTO) {
+    todolistMapper.deleteSelectedAll(selectedAllDTO);
     
   }
 

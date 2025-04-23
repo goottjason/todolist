@@ -21,6 +21,7 @@ import lombok.ToString;
 public class SelectedAllDTO {
 	
     private List<Integer> selectedArr;
+    private String writer;
     private String finished;
     private String star;
     private String duedate;
@@ -33,5 +34,10 @@ public class SelectedAllDTO {
       
       // 셋 다 비어있으면 수행하지 않음
       return isFinished && isStar && isDuedate;
+    }
+    
+    public boolean isEmptyDeleteData() {
+      boolean isSelectedArr = selectedArr == null || selectedArr.equals("");
+      return isSelectedArr;
     }
 }
