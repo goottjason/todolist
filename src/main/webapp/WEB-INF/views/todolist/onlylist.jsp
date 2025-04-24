@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,13 +10,18 @@
 	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <title>To-Do List</title>
 <script type="text/javascript">
-	
+let today = new Date().toLocaleDateString().substring(0, 10); // '2025-04-24'
+$("#duedate, #from, #to").val(today);
+let todayText = new Date().toLocaleDateString();
+$("#menuDateArea").html(todayText);
 </script>
 <script src="https://kit.fontawesome.com/9bef4b10f4.js" crossorigin="anonymous"></script>
 <style>
 </style>
 </head>
 <body>
+<c:set var="now"><fmt:formatDate value="<%=new java.util.Date()%>" pattern="yyyy-MM-dd" /></c:set>
+
 <!-- 할일 테이블 영역 -->
 <div id="ajaxList" class="table-box" style="background:#fff; border-radius:8px; box-shadow:0 2px 8px #eee; padding:16px;">
   <table style="width:100%; border-collapse:collapse; table-layout:fixed;">
@@ -74,7 +80,7 @@
               onmouseout="this.style.background='#fff';">
           <span id="dduedatebtn-${todo.dno}" class="duedateSpan" 
                   data-dno="${todo.dno}" value="${todo.duedate}"
-                  style="color: ${todo.duedate < '2025-04-23' ? '#ec407a': todo.duedate == '2025-04-23' ? '#0f1d41' : '#1976d2'}">
+                  style="color: ${todo.duedate < now ? '#ec407a': todo.duedate == now ? '#0f1d41' : '#1976d2'}">
                   ${todo.duedate}
                   </span>
             <input type="date" class="edit-input-duedate" data-dno="${todo.dno}"

@@ -15,6 +15,8 @@
 <script
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Glatic:wght@700&display=swap" rel="stylesheet">
+<script src="https://kit.fontawesome.com/9bef4b10f4.js" crossorigin="anonymous"></script>
+
 <style>
 <%@include file="style.css"%>  
 </style>  
@@ -77,12 +79,12 @@
       <ul>
         <c:choose>
           <c:when test="${authUser == null}">
-            <li class="headerLi"><a href="/user/signup" class="navbar-brand">가입</a></li>
-            <li class="headerLi"><a href="/user/login" class="navbar-brand">로그인</a></li>
+            <li class="headerLi" style="padding: 0 10px"><a href="/user/signup" class="navbar-brand">가입</a></li>
+            <li class="headerLi" style="padding: 0 10px"><a href="/user/login" class="navbar-brand"><i class="fa-solid fa-right-to-bracket" style="padding: 0 10px"></i>로그인</a></li>
           </c:when>
           <c:otherwise>
             <li class="headerLi" style="padding: 0 10px"><a href="/user/mypage" class="navbar-brand">${authUser.userid}님 MyPage</a></li>
-            <li class="headerLi" style="padding: 0 10px"><a href="/user/logout" class="navbar-brand"><i class="fa-solid fa-right-from-bracket"style="padding: 0 10px"></i>로그아웃</a></li>
+            <li class="headerLi" style="padding: 0 10px"><a href="/user/logout" class="navbar-brand"><i class="fa-solid fa-right-from-bracket" style="padding: 0 10px"></i>로그아웃</a></li>
           </c:otherwise>
         </c:choose>
       </ul>

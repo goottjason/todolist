@@ -115,8 +115,7 @@ public class TodolistController {
       sendInsertDTO.setDefaultValues();
       
       log.info("■■■■■ sendInsertDTO : {}", sendInsertDTO);
-      // dno=0, writer=goottjason, title=내용 없음, duedate=null, 
-      // finished=0, star=0, memo=null, location=null
+
       if(todolistService.insertTodo(sendInsertDTO) == 1) {
         return "success";  
       } else {

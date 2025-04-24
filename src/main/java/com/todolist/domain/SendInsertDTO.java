@@ -24,18 +24,18 @@ public class SendInsertDTO {
   private String memo;
   private String location;
 
-public void setDefaultValues() {
-  if(title != null && title.equals("")) {     
-    this.title = "내용 없음";
-  }
-  if(duedate != null && duedate.equals("")) {     
-    this.duedate = null;
-  }
-  if(memo != null && memo.equals("")) {     
-    this.memo = null;
-  }
-  if(location != null && location.equals("")) {     
-    this.location = null;
-  }
-}  
+  public void setDefaultValues() {
+    if(title != null && title.equals("")) {     
+      this.title = "내용 없음";
+    }
+    if(duedate != null && duedate.equals("")) {     
+      this.duedate = null;
+    }
+    if(memo != null && memo.equals("")) {     
+      this.memo = null;
+    }
+    if(location != null && location.equals("")) {     
+      this.location = null;
+    }
+  }  
 }

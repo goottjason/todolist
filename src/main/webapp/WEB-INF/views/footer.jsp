@@ -11,6 +11,7 @@
 </head>
 <body>
 	<div class="mt-5 p-4 bg-secondary text-white text-center">
+  © 2025  •  GOOTT5
 	</div>
 </body>
 </html>

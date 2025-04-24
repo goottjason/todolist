@@ -134,7 +134,9 @@ function mainpageIsValid() {
   }
   return result;
 }
-
+function resetCheckMyPage() {
+  location.href = "../user/mypage";
+}
 </script>
 </head>
 
@@ -203,11 +205,11 @@ function mainpageIsValid() {
         <div style="display:flex; gap:10px; margin-top:28px;">
           <button type="submit" class="btn btn-success" onclick="return mainpageIsValid();"
             style="flex:1; background:#0f1d41; color:#fff; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">저장</button>
-          <button type="reset" class="btn btn-danger"
+          <button type="reset" class="btn btn-danger" onclick="resetCheckMyPage();" 
             style="flex:1; background:#e0e4ea; color:#0f1d41; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">취소</button>
         </div>
       </form>
-    </div>
+    </div> 
   </div>
 </div>
 <jsp:include page="../footer.jsp"></jsp:include>

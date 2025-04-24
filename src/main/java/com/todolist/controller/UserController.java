@@ -36,16 +36,21 @@ public class UserController {
 
   @GetMapping("/mypage")
   public String mypage(Model model, HttpSession session) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if(authUser == null) {
-      return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
-    } else {
+//    
+    if(session.getAttribute("authUser") != null) {
+      UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+      authUser = userService.login(authUser.getUserid(), authUser.getUserpwd());
       return "/user/mypage";
+    } else {
+      return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
+
     }
     
   }
+  
   @GetMapping("/signup")
   public void signup() {
+    
   }
   @GetMapping("/login")
   public void login() {
@@ -95,17 +100,17 @@ public class UserController {
   
   @PostMapping("/updateinfo")
   public String updateInfo(UserDTO user, RedirectAttributes rttr, HttpSession session) {
-    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if(authUser == null) {
+//    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+    if(user == null) {
       return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
     } else {
-      user.setUserid(authUser.getUserid());
+//      user.setUserid(authUser.getUserid());
+      log.info("회원정보 수정 : {}", user);
+      userService.updateInfo(user);
+      session.setAttribute("authUser", user);
+      return "redirect:/user/mypage";
     }
-    log.info("aa회원정보 수정 : {}", user);
-    String result = "";
-    userService.updateInfo(user);
     
-    return "redirect:/user/mypage";
   }
   
   @PostMapping("/login")

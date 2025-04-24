@@ -38,7 +38,7 @@
 		initialList(); 
     countTodo(); 
 		
-    let today = new Date().toISOString().substring(0, 10);
+    let today = new Date().toLocaleDateString().substring(0, 10);
     $("#duedate, #from, #to").val(today);
     let todayText = new Date().toLocaleDateString();
     $("#menuDateArea").html(todayText);
@@ -104,7 +104,7 @@
 	  
 	  
     // ===============================
-    // 정렬, 리마인더
+    // 정렬
     // ===============================
 
     // 정렬아이콘 클릭시 (오름차순, 내림차순)

@@ -3,8 +3,8 @@
 function ajaxFunc(url, data, dataType=null) {
   let result = "";
   $.ajax({
-    url : url, // 데이터가 송수신될 서버의 주소
-    type : "POST", // 통신 방식 (GET, POST, PUT, DELETE)
+    url : url, 
+    type : "POST", 
     data : data,
     dataType : dataType,
     async : false,
@@ -92,7 +92,6 @@ function validCheckPwd2 (pwd1, pwd2) {
 function validCheckUsername (username, id) {
   if(username.length > 0) { // 
     outputMsg("사용가능", $("#"+id), "green");
-    console.log(username);
     return "success";
   } else {
     outputMsg("이름은 필수 입력입니다.", $("#"+id), "red");
@@ -104,7 +103,6 @@ function validCheckUsername (username, id) {
 function validCheckUseraddr(useraddr, id) {
   if(useraddr.length > 0) { // 
     outputMsg("사용가능", $("#"+id), "green");
-    console.log(useraddr);
     return "success";
   } else {
     outputMsg("주소는 필수 입력입니다.", $("#"+id), "red");

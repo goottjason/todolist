@@ -123,12 +123,10 @@ function uniqueEmailCheck() {
 // "인증하기" 버튼 클릭시 작동
 function emailAuth() {
 	uniqueEmailCheck();
-	alert("결과", result);
   // 이메일 보내는 요청
-  if (result == "success") {
-	  alert("중복체크 성공");
-	  
-  }
+//   if (result == "success") {
+// 	  alert("중복체크 성공");
+//   }
   // keyup이벤트로 인증번호 일치시 인증을 완료했어요 & 인증번호 및 이메일창 비활성화
 }
 
@@ -186,7 +184,7 @@ function startTimer() {
   // 3분(180초)부터 줄어가야 함
   // setInterval 
   clearTimer();
-  timeLeft = 30;
+  timeLeft = 180;
   updateDisplay(timeLeft);
   intervalId = setInterval(function() {
     timeLeft--;
@@ -339,6 +337,11 @@ function isValid() {
   }
   return result;
 }
+
+function resetCheck() {
+  location.href = "../user/signup";
+}
+
 </script>
 
 
@@ -411,7 +414,7 @@ function isValid() {
         </div>
         <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
           <button type="submit" class="btn btn-success" onclick="return isValid();" style="background-color: #32691e; color: white; border: none; border-radius: 5px; padding: 10px 30px; cursor: pointer; font-weight: 500; transition: background-color 0.3s;">가입하기</button>
-          <button type="reset" class="btn btn-danger" style="background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px 30px; cursor: pointer; font-weight: 500; transition: background-color 0.3s;">취소</button>
+          <button type="reset" class="btn btn-danger" onclick="resetCheck();"style="background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 10px 30px; cursor: pointer; font-weight: 500; transition: background-color 0.3s;">취소</button>
         </div>
       </form>
     </div>  

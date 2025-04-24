@@ -29,7 +29,7 @@ public class EmailReminderScheduler {
   private final TodolistMapper todolistMapper;
   private final SendEmailService sendEmailService;
   
-//  @Scheduled(cron = "0 0/1 * * * * ")
+  @Scheduled(cron = "0 36 10 * * * ")
   public void reminderSchedule() throws AddressException, FileNotFoundException, IOException, MessagingException {
     // 내일이 마감인 글 조회
     List<TodoDTO> list = todolistMapper.selectTodoDueTommorrow();
@@ -49,9 +49,9 @@ public class EmailReminderScheduler {
       String useremail = userMapper.selectEmail(userid);
       log.info("●●●●●●●●●●{}, {}", userid, useremail);
       StringBuilder sb = new StringBuilder();
-      sb.append("내일까지 해야할 일");
+      sb.append("<h3>내일까지 해야할 일<h3><br><br>");
       for(TodoDTO dto : entry.getValue()) {
-        sb.append("●").append(dto.getTitle());
+        sb.append("●").append(dto.getTitle()).append("<br><br>");
       }
       sb.append(userid+ "님, 완료하세요");
       
