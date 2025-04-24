@@ -9,7 +9,10 @@
   <select id="selectAuthUser" resultType="com.todolist.domain.UserDTO">
     select * from kjw_user where userid = #{userid} and userpwd = sha1(md5(#{userpwd}))
   </select>
-
+  
+  <select id= "selectUserById" resultType="com.todolist.domain.UserDTO">
+    select * from kjw_user where userid = #{userid}
+  </select>
 
   <insert id="insertUser">
     insert into kjw_user (userid, userpwd, useremail, username, useraddr) values(#{userid}, sha1(md5(#{userpwd})), #{useremail}, #{username}, #{useraddr})

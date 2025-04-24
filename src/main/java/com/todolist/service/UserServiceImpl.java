@@ -3,6 +3,7 @@ package com.todolist.service;
 import org.springframework.stereotype.Service;
 
 import com.todolist.domain.UserDTO;
+import com.todolist.domain.UserUpdateDTO;
 import com.todolist.mapper.UserMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -38,8 +39,12 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void updateInfo(UserDTO user) {
-    userMapper.updateInfo(user);    
+  public int updateInfo(UserUpdateDTO user) {
+    return userMapper.updateInfo(user);    
+  }
+  @Override
+  public UserDTO selectUserById(String userid) {
+    return userMapper.selectUserById(userid);
   }
 
 

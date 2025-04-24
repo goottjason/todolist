@@ -28,6 +28,8 @@
 
 
 <script type="text/javascript">
+
+
   $(function() {
 	  
 		// ====================================
@@ -44,34 +46,45 @@
     $("#menuDateArea").html(todayText);
     
 		// -------- 캘린더 생성 관련
+		let specialDates = [];
 	  let myCalendar = jsCalendar.new("#my-calendar"); // 캘린더 생성
-	  let specialDates = listDuedate();
-	  
-	  myCalendar.onDateRender(function(date, element, info) {
-	    let yyyy = date.getFullYear();
-	    let mm = String(date.getMonth() + 1).padStart(2, '0');
-	    let dd = String(date.getDate()).padStart(2, '0');
-	    let value = yyyy + '-' + mm + '-' + dd;	
-
-	    if(specialDates.includes(value)){
-	      element.style.fontWeight = 'bold';
-	      element.style.color = '#0f1d41'; //'#2453E3';
-	      element.style.fontSize = '16px';
-	    }
-	  });
-
-	  myCalendar.refresh();
 	  
 	  myCalendar.onDateClick(function(event, date){
 	    var value = date.toLocaleDateString('sv-SE');
 	    document.getElementById("selected-date").value = value;
-// 	    $("#selected-date").val() = value;
 	    
 	    sessionStorage.setItem("status", "calendarList");
 	    sessionStorage.setItem("calPickDate", value);
 	    doList();
 	  });
+	  
+		// -------- |calBoldFunc()|
+		// 볼드처리하는 함수
+	  function calBoldFunc() {
+	  	myCalendar.onDateRender(function(date, element, info) {
+	  	    let yyyy = date.getFullYear();
+	  	    let mm = String(date.getMonth() + 1).padStart(2, '0');
+	  	    let dd = String(date.getDate()).padStart(2, '0');
+	  	    let value = yyyy + '-' + mm + '-' + dd;	
+
+	  	    if(specialDates.includes(value)){
+	  	      element.style.fontWeight = 'bold';
+	  	      element.style.color = '#0f1d41'; //'#2453E3';
+	  	      element.style.fontSize = '16px';
+	  	    }
+	  	 });
+	  }
+		
+		//-------- |refreshCalStatus()|
+		// 리스트를 받아와서 볼드처리하여 새로고침하는 함수 
+	  function refreshCalStatus() {
+	  	specialDates = listDuedate();
+	  	calBoldFunc();
+	  	myCalendar.refresh();
+	  }
   	
+	  refreshCalStatus();
+	  
 	  // -------- 데이트피커 생성 관련
     let picker = new easepick.create({
       element: "#regDateInput",
@@ -155,7 +168,7 @@
     
     // -------- 할일추가에서 하단화살표아이콘 클릭시
     $("body").on("click", "#etcBtn", function() {
-      $("#lm-toggle").show();
+      $("#lm-toggle").toggle();
     });  
 
 
@@ -206,6 +219,7 @@
         $("#detailfinishedIcon-"+dno).toggleClass("fa-circle-check");
         $("#dtitleTd-" + dno).toggleClass("completed", checked);
         doList();
+        countTodo(); 
       }
     });    	
       
@@ -226,6 +240,7 @@
         span.text(value).show();
         $(this).hide();
         titleModify(dno, value); 
+        countTodo(); 
       }
     });
  		
@@ -237,6 +252,7 @@
       span.text(value).show();
       $(this).hide();
       titleModify(dno, value); 
+      countTodo(); 
     });
 
     // -------- 테이블에서 날짜영역 클릭시 (수정모드 전환)
@@ -255,7 +271,9 @@
         let span = $(this).siblings('.duedateSpan');
         span.text(value).show();
         $(this).hide();
-        duedateModify(dno, value); 
+        duedateModify(dno, value);
+        countTodo();
+        refreshCalStatus();
       }
     }); 
  		
@@ -267,6 +285,8 @@
       span.text(value).show();
       $(this).hide();
       duedateModify(dno, value); 
+      countTodo();
+      refreshCalStatus();
     });
  		
     // -------- 중요도 아이콘이 눌렸을 때
@@ -288,8 +308,8 @@
         // checked가 true이면, "completed" 추가하고, false면 삭제
         $("#dstar-" + dno).toggleClass("fa-solid");
         $("#detailstar-"+dno).toggleClass("fa-solid");
-        countTodo();
         doList();
+        countTodo();
       }
     });    
 
@@ -393,6 +413,7 @@
       
       doList();
       countTodo();
+      refreshCalStatus();
     });
     
     // -------- 디테일 삭제 버튼 --------
@@ -410,6 +431,7 @@
       $("#todoDetail").html("");
       doList();
       countTodo();
+      refreshCalStatus();
       
     });
   }); 
@@ -464,6 +486,7 @@
 	    return tempList;
 	  }
 	
+
 	
 	
   // ===============================

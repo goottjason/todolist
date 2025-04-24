@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.todolist.util.SendEmailService;
 import com.todolist.domain.TodoDTO;
 import com.todolist.domain.UserDTO;
+import com.todolist.domain.UserUpdateDTO;
 import com.todolist.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -99,19 +100,31 @@ public class UserController {
   }
   
   @PostMapping("/updateinfo")
-  public String updateInfo(UserDTO user, RedirectAttributes rttr, HttpSession session) {
-//    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
-    if(user == null) {
+  public String updateInfo(UserUpdateDTO updateUser, RedirectAttributes rttr, HttpSession session) {
+    UserDTO authUser = (UserDTO) session.getAttribute("authUser");
+
+    if(authUser == null) {
       return "redirect:/user/login"; // 로그인 하지 않은 경우 로그인 페이지로 리다이렉트 
     } else {
-//      user.setUserid(authUser.getUserid());
-      log.info("회원정보 수정 : {}", user);
-      userService.updateInfo(user);
-      session.setAttribute("authUser", user);
-      return "redirect:/user/mypage";
+      updateUser.setUserid(authUser.getUserid());
+      
+      if (userService.updateInfo(updateUser) == 1) {
+        authUser = userService.selectUserById(authUser.getUserid());
+        session.setAttribute("authUser", authUser);
+        rttr.addFlashAttribute("resultMsg", "회원정보가 변경되었습니다.");
+        return "redirect:/user/mypage";
+        
+      } else {
+        session.removeAttribute("authUser");
+        session.invalidate();
+        rttr.addFlashAttribute("resultMsg", "알 수 없는 오류로 업데이트에 실패하였습니다. 다시 시도해주시기 바랍니다.");
+        return "redirect:/user/mypage";
+      }
+      
     }
     
   }
+  
   
   @PostMapping("/login")
   public String loginPost(@RequestParam("userid") String userid, @RequestParam("userpwd") String userpwd, HttpSession session, RedirectAttributes rttr) {

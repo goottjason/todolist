@@ -1,6 +1,7 @@
 package com.todolist.service;
 
 import com.todolist.domain.UserDTO;
+import com.todolist.domain.UserUpdateDTO;
 
 public interface UserService {
   int idIsDuplicate(String userid);
@@ -11,7 +12,8 @@ public interface UserService {
 
   int existingPwdCheck(String userid, String userpwd);
 
-  void updateInfo(UserDTO user);
+  int updateInfo(UserUpdateDTO user);
 
   int uniqueEmailCheck(String userInputEmail);
+  UserDTO selectUserById(String userid);
 }

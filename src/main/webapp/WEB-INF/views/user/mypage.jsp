@@ -151,7 +151,7 @@ function resetCheckMyPage() {
     <h1 style="font-size:1.7rem; font-weight:700; color:#0f1d41; margin-bottom:32px; text-align:center; letter-spacing:-1px;">
       ${authUser.username} 님의 회원 정보
     </h1>
-    <div style="text-align:center;color:#AF987E">저장 후에는 재로그인이 필요합니다.</div>
+    <div style="text-align:center;color:#AF987E">${resultMsg}</div>
     <div class="container mt-3" style="padding:0;">
       <form action="updateinfo" method="POST">
         <table class="table table-hover" style="width:100%; border-collapse:separate; border-spacing:0 14px;">
@@ -204,7 +204,7 @@ function resetCheckMyPage() {
         </table>
         <div style="display:flex; gap:10px; margin-top:28px;">
           <button type="submit" class="btn btn-success" onclick="return mainpageIsValid();"
-            style="flex:1; background:#0f1d41; color:#fff; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">저장</button>
+            style="flex:1; background:#0f1d41; color:#fff; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">수정</button>
           <button type="reset" class="btn btn-danger" onclick="resetCheckMyPage();" 
             style="flex:1; background:#e0e4ea; color:#0f1d41; border:none; border-radius:7px; padding:12px 0; font-size:15px; font-weight:600; cursor:pointer;">취소</button>
         </div>
