@@ -227,6 +227,7 @@
     $(document).on('click', '.titleTd', function() {
       let span  = $(this).children('.titleSpan');
       let input = span.siblings('.edit-input-title');
+
       input.val(span.text()).show().focus();
       span.hide();
     });
@@ -259,7 +260,7 @@
     $(document).on('click', '.duedateTd', function() {
       let span  = $(this).children('.duedateSpan');
       let input = span.siblings('.edit-input-duedate');
-      input.val(span.text()).show().focus();
+      input.val(span.text().trim()).show().focus();
       span.hide();
     });
 	    
